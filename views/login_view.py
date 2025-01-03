@@ -1,5 +1,5 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Button, PhotoImage, BooleanVar
 
 class LoginView:
     def __init__(self, controller):
@@ -81,13 +81,14 @@ class LoginView:
             278.5,
             image=entry_image_2
         )
-        entry_2 = Entry(
+        self.entry_2 = Entry(
             bd=0,
             bg="#D9D9D9",
             fg="#000716",
-            highlightthickness=0
+            highlightthickness=0,
+            show= "●"
         )
-        entry_2.place(
+        self.entry_2.place(
             x=466.0,
             y=255.0,
             width=218.0,
@@ -152,12 +153,46 @@ class LoginView:
             278.0,
             image=image_image_3
         )
+        
+        self.password_visible = BooleanVar(value=False)
+
+        # Función para alternar entre mostrar/ocultar la contraseña
+        def toggle_password():
+            if self.password_visible.get():
+                self.entry_2.config(show="●")  # Ocultar contraseña
+                image_image_3 = PhotoImage(file=relative_to_assets("image_3.png"))
+            else:
+                self.entry_2.config(show="")  # Mostrar contraseña
+                image_image_3 = PhotoImage(file=relative_to_assets("image_3.png"))
+            self.password_visible.set(not self.password_visible.get())  # Cambiar el estado
+
+        # Evento para cambiar entre mostrar/ocultar
+        canvas.tag_bind(image_3, "<Button-1>", lambda e: toggle_password())
+        
+        close_button = Button(
+            self.window,
+            text="X",
+            font=("Inter", 12),
+            bg="#BC9585",
+            fg="#FFFFFF",
+            command=self.close_and_open_index
+        )
+        close_button.place(x=760, y=10, width=30, height=30)
+        
+
         self.window.resizable(False, False)
         self.window.mainloop()
 
-
         # Evitar que la ventana cambie de tamaño
         self.window.resizable(False, False)
+            
+        
+    def close_and_open_index(self):
+        if self.controller:
+            print("Se encontró controlador (login)")
+            self.controller.open_index_view(self.window)
+        else:
+            print("No hay controlador (login)")
 
     # Método para correr la aplicación
     def run(self):

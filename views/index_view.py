@@ -1,6 +1,7 @@
 from pathlib import Path
 from tkinter import Tk, Canvas, Entry, PhotoImage
 from PIL import Image, ImageTk, ImageDraw
+from models.index_model import IndexModel
 
 
 class IndexView:
@@ -83,13 +84,13 @@ class IndexView:
             235.5,
             image=entry_image_1
         )
-        entry_1 = Entry(
+        self.entry_1 = Entry(
             bd=0,
             bg="#393939",
             fg="#000716",
             highlightthickness=0
         )
-        entry_1.place(
+        self.entry_1.place(
             x=144.0,
             y=212.0,
             width=261.0,
@@ -104,6 +105,14 @@ class IndexView:
             235.0,  # Centrado en la misma altura que el Entry
             image=image_image_2
         )
+        
+        self.model = IndexModel()
+        
+        def search_item():
+            data = self.entry_1.get()
+            self.model.search(data)
+        
+        canvas.tag_bind(image_2, "<Button-1>", lambda e: search_item())
 
         # Añadir los textos
         canvas.create_text(
