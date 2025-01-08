@@ -1,5 +1,5 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, PhotoImage
+from tkinter import Tk, Canvas, Entry, PhotoImage, Radiobutton, StringVar
 from PIL import Image, ImageTk, ImageDraw
 from models.index_model import IndexModel
 
@@ -107,12 +107,6 @@ class IndexView:
         )
         
         self.model = IndexModel()
-        
-        def search_item():
-            data = self.entry_1.get()
-            self.model.search(data)
-        
-        canvas.tag_bind(image_2, "<Button-1>", lambda e: search_item())
 
         # Añadir los textos
         canvas.create_text(
@@ -150,7 +144,65 @@ class IndexView:
             fill="#FFFFFF",
             font=("IstokWeb Regular", 15 * -1)
         )
-
+        
+        self.radio_var = StringVar(value="articulos")
+        
+        radio_button_1 = Radiobutton(
+            self.window,
+            text="Artículos",
+            variable=self.radio_var,
+            value="articulos",
+            bg="#1B1B1B",
+            fg="white",
+            activebackground="#393939",
+            activeforeground="white",
+            font=("IstokWeb Regular", 12),
+            selectcolor="#393939"
+        )
+        
+        radio_button_1.place(x=540.0, y=200.0)
+        
+        radio_button_2 = Radiobutton(
+            self.window,
+            text="Libros",
+            variable=self.radio_var,
+            value="libros",
+            bg="#1B1B1B",
+            fg="white",
+            activebackground="#393939",
+            activeforeground="white",
+            font=("IstokWeb Regular", 12),
+            selectcolor="#393939"
+        )
+        
+        radio_button_2.place(x=540.0, y=225.0)
+        
+        radio_button_3 = Radiobutton(
+            self.window,
+            text="Tesis",
+            variable=self.radio_var,
+            value="tesis",
+            bg="#1B1B1B",
+            fg="white",
+            activebackground="#393939",
+            activeforeground="white",
+            font=("IstokWeb Regular", 12),
+            selectcolor="#393939"
+        )
+        
+        radio_button_3.place(x=540.0, y=250.0)
+        
+        def handle_radio_selection():
+            print(f"Seleccionaste: {self.radio_var.get()}")
+            return self.radio_var.get()
+        
+        def search_item():
+            filter = handle_radio_selection()
+            data = self.entry_1.get()
+            self.model.search(data,filter)
+        
+        canvas.tag_bind(image_2, "<Button-1>", lambda e: search_item())
+        
         # Añadir el banner superior con fondo y texto "Iniciar Sesión"
         canvas.create_rectangle(
             0.0,
@@ -191,6 +243,8 @@ class IndexView:
         
         self.window.resizable(False, False)
         self.window.mainloop()
+    
+    
         
     def on_login_click(self, event):
         if self.controller:
