@@ -145,13 +145,13 @@ class IndexView:
             font=("IstokWeb Regular", 15 * -1)
         )
         
-        self.radio_var = StringVar(value="articulos")
+        self.radio_var = StringVar(value="articulo")
         
         radio_button_1 = Radiobutton(
             self.window,
             text="Artículos",
             variable=self.radio_var,
-            value="articulos",
+            value="articulo",
             bg="#1B1B1B",
             fg="white",
             activebackground="#393939",
@@ -166,7 +166,7 @@ class IndexView:
             self.window,
             text="Libros",
             variable=self.radio_var,
-            value="libros",
+            value="libro",
             bg="#1B1B1B",
             fg="white",
             activebackground="#393939",

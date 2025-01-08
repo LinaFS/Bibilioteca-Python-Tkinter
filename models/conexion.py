@@ -32,6 +32,19 @@ class Conexion:
         
         return results
     
+    def buscar_xtitulo_filtro(self, data, filtro):
+        query = """
+        SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, 
+            descriptor_1, descriptor_2, descriptor_3 
+        FROM Articulo 
+        WHERE titulo LIKE %s
+        AND fuente_original LIKE %s
+        """
+        self.cursor.execute(query, (f"%{data}%", f"%{filtro}%"))
+        results = self.cursor.fetchall()
+        
+        return results
+    
     def mostrar_all_usuarios(self):
         self.cursor.execute("SELECT id, nombre, contrasenia, permisos FROM Usuario")
         results = self.cursor.fetchall()
