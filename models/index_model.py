@@ -1,3 +1,3 @@
 class IndexModel:
-    def search(self, data):
-        print(f"Buscando información para: {data}")
+    def search(self, data, filter):
+        print(f"Buscando información para: {data} y filtro: {filter}")
