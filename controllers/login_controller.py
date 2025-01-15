@@ -1,6 +1,9 @@
+from models.login_model import LoginModel
+
 class LoginController:
     def __init__(self, view):
         self.view = view
+        self.model = LoginModel()
         
     def open_index_view(self, window):
         # Importar dentro del método
@@ -13,3 +16,17 @@ class LoginController:
         controller.view = view  # Asegúrate de que el controlador tiene la vista
         
         view.run()
+        
+    def open_panelAdmin_view (self, window, user, passwd):
+        event=self.model.create_session(user, passwd)
+        
+        if(event==True):
+            from views.panel_admin_view import panelAdminView
+            from controllers.admin_controller import AdminController
+            
+            window.destroy()
+            controller = AdminController(None)
+            view = panelAdminView(controller)
+            controller.view = view
+            
+            view.run()

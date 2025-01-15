@@ -61,18 +61,20 @@ class LoginView:
             195.5,
             image=entry_image_1
         )
-        entry_1 = Entry(
+        self.entry_1 = Entry(
             bd=0,
             bg="#D9D9D9",
             fg="#000716",
             highlightthickness=0
         )
-        entry_1.place(
+        self.entry_1.place(
             x=466.0,
             y=172.0,
             width=267.0,
             height=45.0
         )
+        
+        
 
         entry_image_2 = PhotoImage(
             file=relative_to_assets("entry_2.png"))
@@ -127,7 +129,11 @@ class LoginView:
             image=button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=lambda: self.controller.open_panelAdmin_view(
+                self.window,
+                self.entry_1.get(),
+                self.entry_2.get()
+            ),
             relief="flat"
         )
         button_1.place(
