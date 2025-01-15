@@ -13,16 +13,34 @@ class Conexion:
         self.conexion = init_conexion()
         self.cursor = self.conexion.cursor()
         self.cursor.execute("USE Biblioteca")
-        
-    def mostrar_librerias(self):
-        self.cursor.execute("SHOW DATABASES")
-        results = self.cursor.fetchall()
-        
-        for row in results:
-            print(row)
     
     def mostrar_articulos(self):
         self.cursor.execute("SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, descriptor_1, descriptor_2 , descriptor_3 FROM Articulo")
+        results = self.cursor.fetchall()
+        
+        return results
+    
+    def buscar_xtitulo(self, data):
+        query = """
+        SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, 
+            descriptor_1, descriptor_2, descriptor_3 
+        FROM Articulo 
+        WHERE titulo LIKE %s
+        """
+        self.cursor.execute(query, (f"%{data}%",))
+        results = self.cursor.fetchall()
+        
+        return results
+    
+    def buscar_xtitulo_filtro(self, data, filtro):
+        query = """
+        SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, 
+            descriptor_1, descriptor_2, descriptor_3 
+        FROM Articulo 
+        WHERE titulo LIKE %s
+        AND fuente_original LIKE %s
+        """
+        self.cursor.execute(query, (f"%{data}%", f"%{filtro}%"))
         results = self.cursor.fetchall()
         
         return results

@@ -8,6 +8,6 @@ con = conexion.Conexion()
 #for row in resultados:
 #            print(row)
 
-resultados = con.verificacion_usuario('Noemi', '2345')
+resultados = con.verificacion_usuario('Noemi', '1234')
 for row in resultados:
             print(row)
