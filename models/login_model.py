@@ -1,7 +1,12 @@
 class LoginModel:
+    from models import conexion
+    con = conexion.Conexion()
+     
     def create_session(self, user, passwd):
-        print("Iniciando sesión como admin...")
-        if user == "Usuario" and passwd == "Contraseña":
+        resultados = self.con.verificacion_usuario(user, passwd)
+        
+        if resultados != None:
+            print(f"Iniciando sesión como {resultados}...")
             return True
         else:
             print("No se pudo iniciar sesión")

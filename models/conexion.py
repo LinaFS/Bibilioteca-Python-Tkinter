@@ -51,9 +51,16 @@ class Conexion:
         return results
     
     def verificacion_usuario(self, user, password):
-        self.cursor.execute(f'SELECT id FROM Usuario WHERE (nombre = "{user}" AND contrasenia = "{password}")')
-        results = self.cursor.fetchall()
-        return results
+        query = """
+        SELECT id
+        FROM Usuario
+        WHERE nombre = %s
+        AND contrasenia = %s
+        """
+        self.cursor.execute(query, (user, password))
+        results = self.cursor.fetchone()
+        
+        return results[0] if results else None
     
     def mostrar_us_admins(self):
         self.cursor.execute("SELECT id, nombre, contrasenia, permisos FROM Usuario WHERE permisos = 1")
