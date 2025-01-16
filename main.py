@@ -1,5 +1,6 @@
 from controllers.index_controller import IndexController
 from views.index_view import IndexView
+from models.conexion import init_conexion
 
 def main():
     # Crear el controlador
@@ -10,6 +11,8 @@ def main():
     
     # Vincular el controlador a la vista
     controller.view = view  # Asegúrate de que el controlador tiene la vista
+    
+    conexion = init_conexion()
     
     # Ejecutar la aplicación
     view.run()

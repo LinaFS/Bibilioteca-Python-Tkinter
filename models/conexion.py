@@ -1,73 +1,21 @@
 import mysql.connector
+from mysql.connector import Error
 
 def init_conexion():
+    """
+    Inicializa una conexión a la base de datos MySQL.
+    Retorna la conexión si es exitosa, de lo contrario, devuelve None.
+    """
+    try:
         conexion = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            password = "1234",
+            host="localhost",         
+            user="root",              
+            password="1234",          
+            database="Biblioteca"     
         )
-        return conexion
-
-class Conexion:    
-    def __init__(self):
-        self.conexion = init_conexion()
-        self.cursor = self.conexion.cursor()
-        self.cursor.execute("USE Biblioteca")
-    
-    def mostrar_articulos(self):
-        self.cursor.execute("SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, descriptor_1, descriptor_2 , descriptor_3 FROM Articulo")
-        results = self.cursor.fetchall()
-        
-        return results
-    
-    def buscar_xtitulo(self, data):
-        query = """
-        SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, 
-            descriptor_1, descriptor_2, descriptor_3 
-        FROM Articulo 
-        WHERE titulo LIKE %s
-        """
-        self.cursor.execute(query, (f"%{data}%",))
-        results = self.cursor.fetchall()
-        
-        return results
-    
-    def buscar_xtitulo_filtro(self, data, filtro):
-        query = """
-        SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, 
-            descriptor_1, descriptor_2, descriptor_3 
-        FROM Articulo 
-        WHERE titulo LIKE %s
-        AND fuente_original LIKE %s
-        """
-        self.cursor.execute(query, (f"%{data}%", f"%{filtro}%"))
-        results = self.cursor.fetchall()
-        
-        return results
-    
-    def mostrar_all_usuarios(self):
-        self.cursor.execute("SELECT id, nombre, contrasenia, permisos FROM Usuario")
-        results = self.cursor.fetchall()
-        return results
-    
-    def verificacion_usuario(self, user, password):
-        query = """
-        SELECT id
-        FROM Usuario
-        WHERE nombre = %s
-        AND contrasenia = %s
-        """
-        self.cursor.execute(query, (user, password))
-        results = self.cursor.fetchone()
-        
-        return results[0] if results else None
-    
-    def mostrar_us_admins(self):
-        self.cursor.execute("SELECT id, nombre, contrasenia, permisos FROM Usuario WHERE permisos = 1")
-        results = self.cursor.fetchall()
-        return results
-    
-    def mostrar_us_usuarios(self):
-        self.cursor.execute("SELECT id, nombre, contrasenia, permisos FROM Usuario WHERE permisos = 2")
-        results = self.cursor.fetchall()
-        return results
+        if conexion.is_connected():
+            print("Conexión exitosa a la base de datos")
+            return conexion
+    except Error as e:
+        print(f"Error al conectar a la base de datos: {e}")
+        return None
