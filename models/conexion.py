@@ -1,18 +1,24 @@
 import mysql.connector
+from mysql.connector import Error
 
 def init_conexion():
-        conexion = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            password = "75913",
-        )
-        return conexion
+    """
+    Inicializa una conexión a la base de datos MySQL.
+    Retorna la conexión si es exitosa, de lo contrario, devuelve None.
+    """
+    conexion = mysql.connector.connect(
+        host = "localhost",
+        user = "root",
+        password = "1234",
+    )
+    return conexion
+    
 
 class Conexion:    
     def __init__(self):
         self.conexion = init_conexion()
         self.cursor = self.conexion.cursor()
-        self.cursor.execute("USE biblioteca")
+        self.cursor.execute("USE Biblioteca")
     
     def mostrar_articulos(self):
         self.cursor.execute("SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, descriptor_1, descriptor_2 , descriptor_3 FROM Articulo")
