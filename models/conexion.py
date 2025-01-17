@@ -4,7 +4,7 @@ def init_conexion():
         conexion = mysql.connector.connect(
             host = "localhost",
             user = "root",
-            password = "1234",
+            password = "75913",
         )
         return conexion
 
@@ -12,7 +12,7 @@ class Conexion:
     def __init__(self):
         self.conexion = init_conexion()
         self.cursor = self.conexion.cursor()
-        self.cursor.execute("USE Biblioteca")
+        self.cursor.execute("USE biblioteca")
     
     def mostrar_articulos(self):
         self.cursor.execute("SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, descriptor_1, descriptor_2 , descriptor_3 FROM Articulo")

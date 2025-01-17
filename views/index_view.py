@@ -179,9 +179,9 @@ class IndexView:
         
         radio_button_3 = Radiobutton(
             self.window,
-            text="Tesis",
+            text="Revistas",
             variable=self.radio_var,
-            value="tesis",
+            value="revista",
             bg="#1B1B1B",
             fg="white",
             activebackground="#393939",
