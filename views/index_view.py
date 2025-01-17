@@ -113,7 +113,7 @@ class IndexView:
             135.0,
             185.0,
             anchor="nw",
-            text="Buscar artículo, libro, tesis...",
+            text="Buscar artículo, libro, revista...",
             fill="#FFFFFF",
             font=("IstokWeb Regular", 15 * -1)
         )
