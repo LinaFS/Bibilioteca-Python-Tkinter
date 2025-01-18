@@ -132,7 +132,7 @@ class LoginView:
             command=lambda: self.controller.open_panelAdmin_view(
                 self.window,
                 self.entry_1.get(),
-                self.entry_2.get()
+                self.entry_2.get(),
             ),
             relief="flat"
         )

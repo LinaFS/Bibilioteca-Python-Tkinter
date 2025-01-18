@@ -49,7 +49,7 @@ class panelAdminView:
             font=("IstokWeb Bold", 55 * -1)
         )
         
-        canvas.create_text(
+        self.closeSession = canvas.create_text(
             663.0,
             27.0,
             anchor="nw",
@@ -57,6 +57,23 @@ class panelAdminView:
             fill= "#000000",
             font=("IstokWeb Bold", 15 * -1)
         )
+
+        def on_hover(event):
+            # Cambiar color y subrayar al pasar el mouse
+            canvas.itemconfig(self.closeSession, fill="white", font=("IstokWeb Bold", 15 * -1, "underline"))
+
+        def on_leave(event):
+            # Restaurar el estilo original cuando el mouse salga
+            canvas.itemconfig(self.closeSession, fill="black", font=("IstokWeb Bold", 15 * -1))
+
+        if self.controller:
+            print("Se encontró controlador (admin)")
+            canvas.tag_bind(self.closeSession, "<Button-1>", lambda event: self.controller.close_session_view(self.window))
+            canvas.tag_bind(self.closeSession, "<Enter>", on_hover)  # Cuando el mouse entra
+            canvas.tag_bind(self.closeSession, "<Leave>", on_leave)  # Cuando el mouse sale
+        else:
+            print("No hay controlador (admin)")
+
 
         # Crear un rectángulo translúcido
         create_translucent_rectangle(canvas, 152, 211, 647, 339, "#342217", 0.6)
@@ -115,3 +132,5 @@ class panelAdminView:
         
     def run(self):
         self.window.mainloop()
+
+    

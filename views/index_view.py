@@ -138,7 +138,7 @@ class IndexView:
 
         canvas.create_text(
             502.0,
-            333.0,
+            338.0,
             anchor="nw",
             text="Novedades",
             fill="#FFFFFF",
@@ -226,7 +226,7 @@ class IndexView:
             23.0,
             anchor="nw",
             text="Iniciar Sesión",
-            fill="#FFFFFF",
+            fill="black",
             font=("IstokWeb Regular", 15 * -1)
         )
 
@@ -238,8 +238,18 @@ class IndexView:
             31.0,
             image=image_image_4
         )
+
+        def on_hover(event):
+            # Cambiar color y subrayar al pasar el mouse
+            canvas.itemconfig(login_text, fill="white", font=("IstokWeb Bold", 15 * -1, "underline"))
+
+        def on_leave(event):
+            # Restaurar el estilo original cuando el mouse salga
+            canvas.itemconfig(login_text, fill="black", font=("IstokWeb Bold", 15 * -1))
         
         canvas.tag_bind(login_text, "<Button-1>", self.on_login_click)
+        canvas.tag_bind(login_text, "<Enter>", on_hover)  # Cuando el mouse entra
+        canvas.tag_bind(login_text, "<Leave>", on_leave)
         
         self.window.resizable(False, False)
         self.window.mainloop()

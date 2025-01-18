@@ -1,4 +1,5 @@
 from models.login_model import LoginModel
+from tkinter import messagebox
 
 class LoginController:
     def __init__(self, view):
@@ -23,10 +24,15 @@ class LoginController:
         if(event==True):
             from views.panel_admin_view import panelAdminView
             from controllers.admin_controller import AdminController
-            
+
             window.destroy()
             controller = AdminController(None)
             view = panelAdminView(controller)
             controller.view = view
             
             view.run()
+        else:
+            messagebox.showwarning("Advertencia","Revise los datos de sesión")
+        
+
+
