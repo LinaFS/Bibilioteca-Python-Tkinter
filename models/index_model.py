@@ -11,10 +11,10 @@ class IndexModel:
             SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, 
                 descriptor_1, descriptor_2, descriptor_3 
             FROM Articulo 
-            WHERE titulo LIKE %s
+            WHERE (titulo LIKE %s OR resumen LIKE %s)
             AND fuente_original LIKE %s
             """
-            cursor.execute(query, (f"%{data}%", f"%{filter}%"))
+            cursor.execute(query, (f"%{data}%",f"%{data}%", f"%{filter}%"))
             resultados = cursor.fetchall()
             
             for row in resultados:
