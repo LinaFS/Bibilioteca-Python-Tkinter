@@ -1,6 +1,7 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, PhotoImage, Radiobutton, StringVar
+from tkinter import Button, Label, Tk, Canvas, Entry, PhotoImage, Radiobutton, StringVar, messagebox
 from PIL import Image, ImageTk, ImageDraw
+from guiBuild.search import gui
 from models.index_model import IndexModel
 
 
@@ -96,15 +97,14 @@ class IndexView:
             width=261.0,
             height=45.0
         )
+       # Cargar la imagen con transparencia en formato PNG
+        self.lupa_image = PhotoImage(file=relative_to_assets("image_2.png"))
 
-        # Añadir la lupa al lado derecho del Entry
-        image_image_2 = PhotoImage(
-            file=relative_to_assets("image_2.png"))
-        image_2 = canvas.create_image(
-            440.0,  # Posición x ajustada para estar junto al Entry
-            235.0,  # Centrado en la misma altura que el Entry
-            image=image_image_2
-        )
+        # Colocar la imagen de la lupa en el canvas
+        image_2 = canvas.create_image(440.0, 235.0, image=self.lupa_image)
+
+        # Asociar la acción de clic en la imagen (detecta el clic sobre la imagen de la lupa)
+        canvas.tag_bind(image_2, "<Button-1>", self.interfaz_de_busqueda)
         
         self.model = IndexModel()
 
@@ -201,7 +201,7 @@ class IndexView:
             data = self.entry_1.get()
             self.model.search(data,filter)
         
-        canvas.tag_bind(image_2, "<Button-1>", lambda e: search_item())
+        
         
         # Añadir el banner superior con fondo y texto "Iniciar Sesión"
         canvas.create_rectangle(
@@ -262,6 +262,13 @@ class IndexView:
             self.controller.iniciar_sesion(self.window)
         else:
             print("No hay controlador")
+    
+    def interfaz_de_busqueda(self, event=None):
+        if self.controller:
+            self.controller.realizar_busqueda(self.window)
+        else:
+            print("No hay controlador asociado a esta vista.")
+
             
     def run(self):
         self.window.mainloop()
