@@ -7,3 +7,15 @@ class SearchView:
         window.destroy()
         view = SearchView(self)  # Pasar el controlador actual a la nueva vista
         view.run()
+
+    def buscar(self, texto):
+        """Lógica para la búsqueda."""
+        print(f"Buscando: {texto}")
+
+    def mostrar_mas_leidos(self):
+        """Lógica para mostrar los artículos más leídos."""
+        print("Mostrando los artículos más leídos...")
+
+    def mostrar_novedades(self):
+        """Lógica para mostrar novedades."""
+        print("Mostrando las novedades...")
