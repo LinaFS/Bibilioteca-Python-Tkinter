@@ -103,8 +103,6 @@ class IndexView:
         # Colocar la imagen de la lupa en el canvas
         image_2 = canvas.create_image(440.0, 235.0, image=self.lupa_image)
 
-        # Asociar la acción de clic en la imagen (detecta el clic sobre la imagen de la lupa)
-        canvas.tag_bind(image_2, "<Button-1>", self.interfaz_de_busqueda)
         
         self.model = IndexModel()
 
@@ -199,9 +197,14 @@ class IndexView:
         def search_item():
             filter = handle_radio_selection()
             data = self.entry_1.get()
-            self.model.search(data,filter)
+            query = self.model.search(data,filter)
+            if query:
+                self.controller.realizar_busqueda(self.window, query)
+            else:
+                query = "No hay coincidencias"
+                self.controller.realizar_busqueda(self.window, query)
         
-        
+        canvas.tag_bind(image_2, "<Button-1>", lambda e: search_item())
         
         # Añadir el banner superior con fondo y texto "Iniciar Sesión"
         canvas.create_rectangle(
@@ -262,12 +265,6 @@ class IndexView:
             self.controller.iniciar_sesion(self.window)
         else:
             print("No hay controlador")
-    
-    def interfaz_de_busqueda(self, event=None):
-        if self.controller:
-            self.controller.realizar_busqueda(self.window)
-        else:
-            print("No hay controlador asociado a esta vista.")
 
             
     def run(self):

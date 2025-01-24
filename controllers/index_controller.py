@@ -2,6 +2,7 @@ from views.login_view import LoginView
 from controllers.login_controller import LoginController
 from models.index_model import IndexModel
 from views.search_view import SearchView
+from controllers.search_controller import SearchController
 
 class IndexController:
     def __init__(self, view):
@@ -18,15 +19,13 @@ class IndexController:
         controller.view = view
         view.run()  # Ejecutar la vista de inicio de sesión
     
-    def realizar_busqueda(self, window):
-        
+    def realizar_busqueda(self, window, query):
         print("Cambiando a la vista de búsqueda...")
         window.destroy()  # Cierra la ventana actual
-
-        # Crear y mostrar la vista de búsqueda
-        search_view = SearchView(self)
-        self.view = search_view
-        search_view.run()
+        controller = SearchController(None, query)
+        view = SearchView(controller)
+        controller.view = view
+        view.run()
         
     def open_index_view(self, window):
         # Importar dentro del método
