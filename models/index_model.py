@@ -34,6 +34,8 @@ class IndexModel:
                 }
                 resultados_array.append(resultado)
 
+            print(resultados_array)
+
             return resultados_array
         else:
             print("No se pudo conectar a la base de datos")
