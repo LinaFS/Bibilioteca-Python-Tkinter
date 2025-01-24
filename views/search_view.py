@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Label, Entry, Button, Radiobutton, StringVar
+from tkinter import Tk, Frame, Label, Entry, Button, Radiobutton, StringVar, Scrollbar, Canvas
 from pathlib import Path
 
 
@@ -7,6 +7,9 @@ class SearchView:
         self.controller = controller
         OUTPUT_PATH = Path(__file__).parent
 
+        data=self.controller.get_data()
+        print (data)
+
         self.window = Tk()
         self.window.geometry("800x500")  # Dimensiones de la ventana
         self.window.configure(bg="#FFFFFF")  # Fondo blanco
@@ -14,9 +17,9 @@ class SearchView:
         self.window.resizable(False, False)
 
         # Colores personalizados
-        self.fondo_rojo = "#BC9585" 
+        self.fondo_rojo = "#BC9585"
         self.fondo_azul = "#1B1B1B"  # Color oscuro para el fondo
-        self.fondo_marron = "#5a3d31" 
+        self.fondo_marron = "#5a3d31"
         self.fondo_texto = "#828282"
         self.fondo_resultados = "#f5f5f5"  # Color claro para resultados
         self.texto_blanco = "#ffffff"
@@ -51,7 +54,7 @@ class SearchView:
             self.busqueda_frame,
             text="🔍",
             bg=self.fondo_rojo,
-            fg=self.texto_blanco,
+            fg=self.texto_negro,
             font=("Arial", 12),
             command=lambda: self.buscar(self.entrada_busqueda.get()),
         )
@@ -72,7 +75,7 @@ class SearchView:
             fg=self.texto_blanco,
             font=("nw", 12, "bold"),
         )
-        self.filtros_label.pack(pady=10)
+        self.filtros_label.pack(pady=(10,0), padx=(10,0))
 
         # Radios para filtros
         self.opciones = ["Artículos", "Libros", "Tesis"]
@@ -91,21 +94,40 @@ class SearchView:
 
         # Área de resultados (lado derecho)
         self.resultados_frame = Frame(self.area_principal, bg=self.fondo_resultados)
-        self.resultados_frame.pack(side="right", expand=True, fill="both", padx=20, pady=20)
+        self.resultados_frame.pack(side="left", expand=True, fill="both", padx=20, pady=20)
 
-        # Cuadro para resultados
-        self.cuadro_resultados = Frame(self.resultados_frame, bg=self.fondo_resultados, bd=2, relief="flat")
-        self.cuadro_resultados.pack(expand=True, fill="both", padx=10, pady=10)
+        # Scrollbar y Canvas para resultados
+        self.canvas = Canvas(self.resultados_frame, bg=self.fondo_resultados)
+        self.scrollbar = Scrollbar(
+            self.resultados_frame, orient="vertical", command=self.canvas.yview
+        )
+        self.scrollable_frame = Frame(self.canvas, bg=self.fondo_resultados)
 
-        # Cada resultado (similar al diseño de la imagen)
+        # Configuración del scrollbar
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+
+        # Crear la ventana dentro del canvas
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        # Configuración del scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        # Agregar widgets a la ventana del canvas
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="left", fill="y")
+
+        # Contenido dentro del Frame scrollable
         for i in range(3):  # Ejemplo de tres resultados
-            resultado_item = Frame(self.cuadro_resultados, bg="white", bd=1, relief="solid")
-            resultado_item.pack(fill="x", padx=10, pady=10)
+            resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
+            resultado_item.pack(fill="x", padx=60, pady=10)
 
             # Título
             titulo_label = Label(
                 resultado_item,
-                text="Título del artículo/libro/tesis",
+                text=f"Título del artículo/libro/tesis {i+1}",
                 font=("Arial", 14, "bold"),
                 bg="white",
                 anchor="w",
@@ -115,7 +137,7 @@ class SearchView:
             # Autor
             autor_label = Label(
                 resultado_item,
-                text="Autor",
+                text=f"Autor {i+1}",
                 font=("Arial", 12),
                 bg="white",
                 anchor="w",
@@ -158,53 +180,12 @@ class SearchView:
             )
             flecha_button.pack(side="right")
 
-        
-        
-        # Botones "Más leídos" y "Novedades" en la barra superior
-        self.botones_superior_frame = Frame(self.barra_superior, bg=self.fondo_rojo)
-        self.botones_superior_frame.pack(side="right", padx=10)
-
-        self.boton_mas_leidos = Label(
-            self.botones_superior_frame,
-            text="Más leídos",
-            bg=self.fondo_rojo,
-            fg=self.texto_negro,
-            font=("nw", 10, "underline"),
-            cursor="hand2",
-        )
-        self.boton_mas_leidos.pack(side="left", padx=5)
-        self.boton_mas_leidos.bind("<Button-1>", lambda e: self.mostrar_mas_leidos())
-
-        self.boton_novedades = Label(
-            self.botones_superior_frame,
-            text="Novedades",
-            bg=self.fondo_rojo,
-            fg=self.texto_negro,
-            font=("nw", 10, "underline"),
-            cursor="hand2",
-        )
-        self.boton_novedades.pack(side="left", padx=5)
-        self.boton_novedades.bind("<Button-1>", lambda e: self.mostrar_novedades())
-        
     def regresar_index(self):
         if self.controller:
             print("Regresando al índice...")
             self.controller.open_index_view(self.window)
         else:
-            print("No hay indice...")
-
-    def buscar(self, texto):
-        """Lógica para la búsqueda."""
-        print(f"Buscando: {texto}")
-
-    def mostrar_mas_leidos(self):
-        """Lógica para mostrar los artículos más leídos."""
-        print("Mostrando los artículos más leídos...")
-
-    def mostrar_novedades(self):
-        """Lógica para mostrar novedades."""
-        print("Mostrando las novedades...")
+            print("No hay índice...")
 
     def run(self):
         self.window.mainloop()
-
