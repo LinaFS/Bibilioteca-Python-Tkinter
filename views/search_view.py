@@ -48,6 +48,14 @@ class SearchView:
             self.busqueda_frame, font=("nw", 10), width=40
         )
         self.entrada_busqueda.pack(side="left", padx=10)
+        
+        def buscar_articulos(texto, filter):
+            query = self.controller.buscar(texto,filter)
+            if query:
+                    self.view.generar_resultados(query)
+            else:
+                query = "No hay coincidencias"
+                self.view.generar_resultados(query)
 
         self.lupa_boton = Button(
             self.busqueda_frame,
@@ -55,7 +63,7 @@ class SearchView:
             bg=self.fondo_rojo,
             fg=self.texto_negro,
             font=("Arial", 12),
-            command=lambda: self.controller.buscar(self.entrada_busqueda.get(), self.filtro_var.get()),
+            command=lambda: buscar_articulos(self.entrada_busqueda.get(), self.filtro_var.get()),
         )
         self.lupa_boton.pack(side="left")
 
@@ -117,7 +125,6 @@ class SearchView:
         # Agregar widgets a la ventana del canvas
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="left", fill="y")
-        
         
         self.generar_resultados(data)
     

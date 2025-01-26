@@ -1,4 +1,5 @@
 from models.search_model import SearchModel
+from models.index_model import *
 
 class SearchController:
     def __init__(self, view, query):
@@ -6,10 +7,9 @@ class SearchController:
         self.query = query
         self.model = SearchModel()
 
-
     def get_data(self):
-        print("Mostrando resultados:")
-        print(self.query)
+        #print("Mostrando resultados:")
+        #print(self.query)
         return self.query
 
     def open_index_view(self, window):
@@ -23,9 +23,10 @@ class SearchController:
         controller.view = view  # Asegúrate de que el controlador tiene la vista
         
         view.run()
-
-    def buscar(self, texto):
+    
+    def buscar(self, texto,filter):
         """Lógica para la búsqueda."""
+        return IndexModel.search(texto,filter)
        
 
     def mostrar_mas_leidos(self):
