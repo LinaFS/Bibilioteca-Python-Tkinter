@@ -8,8 +8,7 @@ class SearchView:
         OUTPUT_PATH = Path(__file__).parent
 
         data=self.controller.get_data()
-        print (data)
-
+        
         self.window = Tk()
         self.window.geometry("800x500")  # Dimensiones de la ventana
         self.window.configure(bg="#FFFFFF")  # Fondo blanco
@@ -56,7 +55,7 @@ class SearchView:
             bg=self.fondo_rojo,
             fg=self.texto_negro,
             font=("Arial", 12),
-            command=lambda: self.buscar(self.entrada_busqueda.get()),
+            command=lambda: self.controller.buscar(self.entrada_busqueda.get(), self.filtro_var.get()),
         )
         self.lupa_boton.pack(side="left")
 
@@ -78,7 +77,7 @@ class SearchView:
         self.filtros_label.pack(pady=(10,0), padx=(10,0))
 
         # Radios para filtros
-        self.opciones = ["Artículos", "Libros", "Tesis"]
+        self.opciones = ["Articulo", "Libro", "Revista"]
         self.filtro_var = StringVar(value=self.opciones[0])
 
         for opcion in self.opciones:
@@ -118,67 +117,72 @@ class SearchView:
         # Agregar widgets a la ventana del canvas
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="left", fill="y")
+        
+        
+        self.generar_resultados(data)
+    
+    def generar_resultados(self, articulos):
+        if articulos:
+            for articulo in articulos:
+                resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
+                resultado_item.pack(fill="x", padx=60, pady=10)
 
-        # Contenido dentro del Frame scrollable
-        for i in range(3):  # Ejemplo de tres resultados
-            resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-            resultado_item.pack(fill="x", padx=60, pady=10)
+                # Título
+                titulo_label = Label(
+                    resultado_item,
+                    text=articulo.titulo,
+                    font=("Arial", 14, "bold"),
+                    bg="white",
+                    anchor="w",
+                )
+                titulo_label.pack(fill="x", padx=10, pady=(10, 0))
 
-            # Título
-            titulo_label = Label(
-                resultado_item,
-                text=f"Título del artículo/libro/tesis {i+1}",
-                font=("Arial", 14, "bold"),
-                bg="white",
-                anchor="w",
-            )
-            titulo_label.pack(fill="x", padx=10, pady=(10, 0))
+                # Autor
+                autor_label = Label(
+                    resultado_item,
+                    text=articulo.autor,
+                    font=("Arial", 12),
+                    bg="white",
+                    anchor="w",
+                )
+                autor_label.pack(fill="x", padx=10, pady=(0, 5))
 
-            # Autor
-            autor_label = Label(
-                resultado_item,
-                text=f"Autor {i+1}",
-                font=("Arial", 12),
-                bg="white",
-                anchor="w",
-            )
-            autor_label.pack(fill="x", padx=10, pady=(0, 5))
+                # Descripción
+                descripcion_label = Label(
+                    resultado_item,
+                    text=articulo.resumen,
+                    font=("Arial", 10),
+                    bg="white",
+                    anchor="w",
+                    wraplength=400,
+                    justify="left",
+                )
+                descripcion_label.pack(fill="x", padx=10, pady=(0, 10))
 
-            # Descripción
-            descripcion_label = Label(
-                resultado_item,
-                text="Lorem ipsum dolor sit amet consectetur adipiscing elit, "
-                     "pellentesque suscipit odio, et posuere vehicula tellus.",
-                font=("Arial", 10),
-                bg="white",
-                anchor="w",
-                wraplength=400,
-                justify="left",
-            )
-            descripcion_label.pack(fill="x", padx=10, pady=(0, 10))
+                # Fecha y flecha (lado derecho)
+                footer_frame = Frame(resultado_item, bg="white")
+                footer_frame.pack(fill="x", padx=10, pady=(0, 10))
 
-            # Fecha y flecha (lado derecho)
-            footer_frame = Frame(resultado_item, bg="white")
-            footer_frame.pack(fill="x", padx=10, pady=(0, 10))
+                fecha_label = Label(
+                    footer_frame,
+                    text=articulo.fecha,
+                    font=("Arial", 10),
+                    bg="white",
+                    anchor="w",
+                )
+                fecha_label.pack(side="left")
 
-            fecha_label = Label(
-                footer_frame,
-                text="Fecha publicación",
-                font=("Arial", 10),
-                bg="white",
-                anchor="w",
-            )
-            fecha_label.pack(side="left")
-
-            flecha_button = Button(
-                footer_frame,
-                text="→",
-                font=("Arial", 14, "bold"),
-                bg="white",
-                bd=0,
-                cursor="hand2",
-            )
-            flecha_button.pack(side="right")
+                flecha_button = Button(
+                    footer_frame,
+                    text="→",
+                    font=("Arial", 14, "bold"),
+                    bg="white",
+                    bd=0,
+                    cursor="hand2",
+                )
+                flecha_button.pack(side="right")
+            else:
+                print("Aqui va el fragmento de codigo para cuando no hay coincidencias")
 
     def regresar_index(self):
         if self.controller:
