@@ -125,6 +125,7 @@ class SearchView:
         # Agregar widgets a la ventana del canvas
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="left", fill="y")
+        self.canvas.bind_all("<MouseWheel>", self._on_mouse_wheel)
         
         self.generar_resultados(data)
     
@@ -210,6 +211,13 @@ class SearchView:
             self.controller.open_index_view(self.window)
         else:
             print("No hay índice...")
+    def _on_mouse_wheel(self, event):
+    # Ajuste de desplazamiento (positivos son hacia abajo, negativos hacia arriba)
+        delta = -1 * (event.delta // 120)  # Normaliza el delta (Windows y Linux)
+        if self.window.tk.call("tk", "windowingsystem") == "aqua":  # macOS
+            delta = event.delta
+        self.canvas.yview_scroll(delta, "units")
+
 
     def run(self):
         self.window.mainloop()
