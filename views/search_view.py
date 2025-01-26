@@ -134,7 +134,6 @@ class SearchView:
             for articulo in articulos:
                 resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
                 resultado_item.pack(fill="x", padx=20, pady=10)
-
                 # Título
                 titulo_label = Label(
                     resultado_item,
@@ -195,7 +194,7 @@ class SearchView:
                 flecha_button.pack(side="right")
             
         else:
-            sin_coincidencias = Label(
+            self.sin_coincidencias = Label(
                 self.scrollable_frame,
                 resultado_item,
                 text= "No se encontraron resultados.",
