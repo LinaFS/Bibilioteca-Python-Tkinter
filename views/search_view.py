@@ -141,7 +141,7 @@ class SearchView:
                     font=("Arial", 14, "bold"),
                     bg="white",
                     anchor="w",
-                    wraplength=600,
+                    wraplength=400,
                     justify= "center"
                 )
                 titulo_label.pack(fill="x", padx=10, pady=(10, 0))
@@ -153,7 +153,7 @@ class SearchView:
                     font=("Arial", 12),
                     bg="white",
                     anchor="w",
-                    wraplength=600,
+                    wraplength=400,
                     justify= "center"
                 )
                 autor_label.pack(fill="x", padx=10, pady=(0, 5))
@@ -165,7 +165,7 @@ class SearchView:
                     font=("Arial", 10),
                     bg="white",
                     anchor="w",
-                    wraplength=600,
+                    wraplength=400,
                     justify="center",
                 )
                 descripcion_label.pack(fill="x", padx=10, pady=(0, 10))
