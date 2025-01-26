@@ -124,6 +124,7 @@ class SearchView:
         # Agregar widgets a la ventana del canvas
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="left", fill="y")
+        self.canvas.bind_all("<MouseWheel>", self._on_mouse_wheel)
         
         self.generar_resultados(data)
     
@@ -144,8 +145,8 @@ class SearchView:
                     font=("Arial", 14, "bold"),
                     bg="white",
                     anchor="w",
-                    wraplength=400,
-                    justify= "center"
+                    wraplength=500,
+                    justify= "left"
                 )
                 titulo_label.pack(fill="x", padx=10, pady=(10, 0))
 
@@ -156,8 +157,8 @@ class SearchView:
                     font=("Arial", 12),
                     bg="white",
                     anchor="w",
-                    wraplength=400,
-                    justify= "center"
+                    wraplength=500,
+                    justify= "left"
                 )
                 autor_label.pack(fill="x", padx=10, pady=(0, 5))
 
@@ -168,7 +169,7 @@ class SearchView:
                     font=("Arial", 10),
                     bg="white",
                     anchor="w",
-                    wraplength=400,
+                    wraplength=500,
                     justify="center",
                 )
                 descripcion_label.pack(fill="x", padx=10, pady=(0, 10))
@@ -197,10 +198,14 @@ class SearchView:
                 flecha_button.pack(side="right")
             
         else:
-            sin_coincidencias = Label(
+            self.sin_coincidencias = Label(
+                self.scrollable_frame,
                 resultado_item,
-                text= "Sin resultados...",
-                font= ("Arial",20)
+                text= "No se encontraron resultados.",
+                font= ("Arial",20, "bold"),
+                fg="gray",
+                bg= self.fondo_resultados,
+                anchor="center"
             )
 
     def regresar_index(self):
@@ -209,6 +214,13 @@ class SearchView:
             self.controller.open_index_view(self.window)
         else:
             print("No hay índice...")
+    def _on_mouse_wheel(self, event):
+    # Ajuste de desplazamiento (positivos son hacia abajo, negativos hacia arriba)
+        delta = -1 * (event.delta // 120)  # Normaliza el delta (Windows y Linux)
+        if self.window.tk.call("tk", "windowingsystem") == "aqua":  # macOS
+            delta = event.delta
+        self.canvas.yview_scroll(delta, "units")
+
 
     def run(self):
         self.window.mainloop()
