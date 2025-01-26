@@ -132,7 +132,7 @@ class SearchView:
         if articulos:
             for articulo in articulos:
                 resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-                resultado_item.pack(fill="x", padx=60, pady=10)
+                resultado_item.pack(fill="x", padx=20, pady=10)
 
                 # Título
                 titulo_label = Label(
@@ -141,8 +141,8 @@ class SearchView:
                     font=("Arial", 14, "bold"),
                     bg="white",
                     anchor="w",
-                    wraplength=400,
-                    justify= "center"
+                    wraplength=500,
+                    justify= "left"
                 )
                 titulo_label.pack(fill="x", padx=10, pady=(10, 0))
 
@@ -153,8 +153,8 @@ class SearchView:
                     font=("Arial", 12),
                     bg="white",
                     anchor="w",
-                    wraplength=400,
-                    justify= "center"
+                    wraplength=500,
+                    justify= "left"
                 )
                 autor_label.pack(fill="x", padx=10, pady=(0, 5))
 
@@ -165,7 +165,7 @@ class SearchView:
                     font=("Arial", 10),
                     bg="white",
                     anchor="w",
-                    wraplength=400,
+                    wraplength=500,
                     justify="center",
                 )
                 descripcion_label.pack(fill="x", padx=10, pady=(0, 10))
@@ -193,12 +193,16 @@ class SearchView:
                 )
                 flecha_button.pack(side="right")
             
-            else:
-                sin_coincidencias = Label(
-                    resultado_item,
-                    text= "Sin resultados...",
-                    font= ("Arial",20)
-                )
+        else:
+            sin_coincidencias = Label(
+                self.scrollable_frame,
+                resultado_item,
+                text= "No se encontraron resultados.",
+                font= ("Arial",20, "bold"),
+                fg="gray",
+                bg= self.fondo_resultados,
+                anchor="center"
+            )
 
     def regresar_index(self):
         if self.controller:
