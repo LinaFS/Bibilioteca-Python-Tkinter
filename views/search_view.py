@@ -133,7 +133,7 @@ class SearchView:
         if articulos:
             for articulo in articulos:
                 resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-                resultado_item.pack(fill="x", padx=20, pady=10)
+                resultado_item.pack(fill="x", padx=30, pady=10)
                 # Título
                 titulo_label = Label(
                     resultado_item,
