@@ -52,10 +52,9 @@ class SearchView:
         def buscar_articulos(texto, filter):
             query = self.controller.buscar(texto,filter)
             if query:
-                    self.view.generar_resultados(query)
+                    self.generar_resultados(query)
             else:
-                query = "No hay coincidencias"
-                self.view.generar_resultados(query)
+                self.generar_resultados(None)
 
         self.lupa_boton = Button(
             self.busqueda_frame,
@@ -129,11 +128,15 @@ class SearchView:
         self.generar_resultados(data)
     
     def generar_resultados(self, articulos):
+        for widget in self.scrollable_frame.winfo_children():
+            widget.destroy()
+            
+        resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
+        resultado_item.pack(fill="x", padx=60, pady=10)
+            
         if articulos:
             for articulo in articulos:
-                resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-                resultado_item.pack(fill="x", padx=60, pady=10)
-
+                
                 # Título
                 titulo_label = Label(
                     resultado_item,
@@ -193,12 +196,12 @@ class SearchView:
                 )
                 flecha_button.pack(side="right")
             
-            else:
-                sin_coincidencias = Label(
-                    resultado_item,
-                    text= "Sin resultados...",
-                    font= ("Arial",20)
-                )
+        else:
+            sin_coincidencias = Label(
+                resultado_item,
+                text= "Sin resultados...",
+                font= ("Arial",20)
+            )
 
     def regresar_index(self):
         if self.controller:

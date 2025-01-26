@@ -198,10 +198,9 @@ class IndexView:
             filter = handle_radio_selection()
             data = self.entry_1.get()
             query = self.model.search(data,filter)
-            if query:
-                self.controller.realizar_busqueda(self.window, query)
+            if not query:
+                self.controller.realizar_busqueda(self.window, None)
             else:
-                query = "No hay coincidencias"
                 self.controller.realizar_busqueda(self.window, query)
         
         canvas.tag_bind(image_2, "<Button-1>", lambda e: search_item())

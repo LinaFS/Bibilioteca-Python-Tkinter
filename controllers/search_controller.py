@@ -26,8 +26,13 @@ class SearchController:
     
     def buscar(self, texto,filter):
         """Lógica para la búsqueda."""
-        return IndexModel.search(texto,filter)
-       
+        index_model = IndexModel()
+        resultados = index_model.search(texto, filter)
+        if len(resultados) == 0:
+            return None
+        else:
+            return resultados
+
 
     def mostrar_mas_leidos(self):
         """Lógica para mostrar los artículos más leídos."""
