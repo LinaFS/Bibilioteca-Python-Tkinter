@@ -132,11 +132,10 @@ class SearchView:
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
             
-        resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-        resultado_item.pack(fill="x", padx=60, pady=10)
-            
         if articulos:
             for articulo in articulos:
+                resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
+                resultado_item.pack(fill="x", padx=30, pady=30)
                 
                 # Título
                 titulo_label = Label(
@@ -200,7 +199,6 @@ class SearchView:
         else:
             self.sin_coincidencias = Label(
                 self.scrollable_frame,
-                resultado_item,
                 text= "No se encontraron resultados.",
                 font= ("Arial",20, "bold"),
                 fg="gray",
