@@ -131,12 +131,12 @@ class SearchView:
     def generar_resultados(self, articulos):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
-            
-        if articulos:
+
+        if articulos:  # Si hay artículos
             for articulo in articulos:
                 resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-                resultado_item.pack(fill="x", padx=30, pady=30)
-                
+                resultado_item.pack(fill="x", padx=30, pady=10)
+
                 # Título
                 titulo_label = Label(
                     resultado_item,
@@ -145,7 +145,7 @@ class SearchView:
                     bg="white",
                     anchor="w",
                     wraplength=500,
-                    justify= "left"
+                    justify="left",
                 )
                 titulo_label.pack(fill="x", padx=10, pady=(10, 0))
 
@@ -157,7 +157,7 @@ class SearchView:
                     bg="white",
                     anchor="w",
                     wraplength=500,
-                    justify= "left"
+                    justify="left",
                 )
                 autor_label.pack(fill="x", padx=10, pady=(0, 5))
 
@@ -195,16 +195,17 @@ class SearchView:
                     cursor="hand2",
                 )
                 flecha_button.pack(side="right")
-            
-        else:
-            self.sin_coincidencias = Label(
+        else:  # Si no hay artículos
+            mensaje_label = Label(
                 self.scrollable_frame,
-                text= "No se encontraron resultados.",
-                font= ("Arial",20, "bold"),
+                text="No se encontraron resultados.",
+                font=("Arial", 20, "bold"),
                 fg="gray",
-                bg= self.fondo_resultados,
-                anchor="center"
+                bg=self.fondo_resultados,
+                anchor="center",
             )
+            mensaje_label.pack(fill="both", expand=True, pady=20)
+
 
     def regresar_index(self):
         if self.controller:
