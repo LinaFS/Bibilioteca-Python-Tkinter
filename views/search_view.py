@@ -134,6 +134,8 @@ class SearchView:
                     font=("Arial", 14, "bold"),
                     bg="white",
                     anchor="w",
+                    wraplength=600,
+                    justify= "center"
                 )
                 titulo_label.pack(fill="x", padx=10, pady=(10, 0))
 
@@ -144,6 +146,8 @@ class SearchView:
                     font=("Arial", 12),
                     bg="white",
                     anchor="w",
+                    wraplength=600,
+                    justify= "center"
                 )
                 autor_label.pack(fill="x", padx=10, pady=(0, 5))
 
@@ -154,8 +158,8 @@ class SearchView:
                     font=("Arial", 10),
                     bg="white",
                     anchor="w",
-                    wraplength=400,
-                    justify="left",
+                    wraplength=600,
+                    justify="center",
                 )
                 descripcion_label.pack(fill="x", padx=10, pady=(0, 10))
 
@@ -181,8 +185,13 @@ class SearchView:
                     cursor="hand2",
                 )
                 flecha_button.pack(side="right")
+            
             else:
-                print("Aqui va el fragmento de codigo para cuando no hay coincidencias")
+                sin_coincidencias = Label(
+                    resultado_item,
+                    text= "Sin resultados...",
+                    font= ("Arial",20)
+                )
 
     def regresar_index(self):
         if self.controller:
