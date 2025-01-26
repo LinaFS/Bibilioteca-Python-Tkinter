@@ -1,7 +1,14 @@
 from models.conexion import init_conexion
+from collections import namedtuple
 class IndexModel:
     def search(self, data, filter):
         print(f"Buscando información para: {data} y filtro: {filter}")
+        
+        Articulo = namedtuple(
+            "Articulo", 
+            ["id_artic", "titulo", "resumen", "fecha", "palabras_clave", "fuente_original", 
+            "autor", "descriptor_1", "descriptor_2", "descriptor_3"]
+        )
         
         conexion = init_conexion()
         if conexion:
@@ -17,26 +24,12 @@ class IndexModel:
             cursor.execute(query, (f"%{data}%",f"%{data}%", f"%{filter}%"))
             resultados = cursor.fetchall()
             
-            resultados_array = []
+            articulos = [Articulo(*fila) for fila in resultados]
+            
+            for articulo in articulos:
+                print(articulo.id_artic, articulo.titulo)
 
-            for row in resultados:
-                resultado = {
-                    "id_artic": row[0],
-                    "titulo": row[1],
-                    "resumen": row[2],
-                    "fecha": row[3],
-                    "palabras_clave": row[4],
-                    "fuente_original": row[5],
-                    "autor": row[6],
-                    "descriptor_1": row[7],
-                    "descriptor_2": row[8],
-                    "descriptor_3": row[9]
-                }
-                resultados_array.append(resultado)
-
-            print(resultados_array)
-
-            return resultados_array
+            return articulos
         else:
             print("No se pudo conectar a la base de datos")
             return None
