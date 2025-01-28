@@ -1,6 +1,6 @@
 from models.conexion import init_conexion
 from collections import namedtuple
-class IndexModel:
+class IndexModel:        
     def search(self, data, filter):
         print(f"Buscando información para: {data} y filtro: {filter}")
         
@@ -26,10 +26,19 @@ class IndexModel:
             
             articulos = [Articulo(*fila) for fila in resultados]
             
-            for articulo in articulos:
-                print(articulo.id_artic, articulo.titulo)
+            if resultados:
+                for articulo in articulos:
+                    self.registrar_consulta(cursor, articulo.id_artic)
+                    
+            conexion.commit()
+            cursor.close()
+            conexion.close()
 
             return articulos
         else:
             print("No se pudo conectar a la base de datos")
             return None
+    
+    def registrar_consulta(cursor, id_artic):
+        query_registro = "INSERT INTO consultas (id_artic) VALUES (%s)"
+        cursor.execute(query_registro, (id_artic,))

@@ -36,7 +36,18 @@ class SearchController:
 
     def mostrar_mas_leidos(self):
         """Lógica para mostrar los artículos más leídos."""
+        resultados = self.model.buscar_mas_leidos()
+        if len(resultados) == 0:
+            return None
+        else:
+            return resultados 
+        
        
 
     def mostrar_novedades(self):
-        """Lógica para mostrar los artículos en novedades."""
+        """Lógica para mostrar los artículos en novedades."""     
+        resultados = self.model.buscar_novedades()
+        if len(resultados) == 0:
+            return None
+        else:
+            return resultados   
