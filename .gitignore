@@ -1,0 +1,6 @@
+models/prbs.py
+models/__pycache__/
+controllers/__pycache__/
+views/__pycache__/
+models/conexion.py
+guiBuild/search/__pycache__

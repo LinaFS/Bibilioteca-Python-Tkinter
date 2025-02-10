@@ -1,6 +1,8 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, PhotoImage
+from tkinter import Button, Label, Tk, Canvas, Entry, PhotoImage, Radiobutton, StringVar, messagebox
 from PIL import Image, ImageTk, ImageDraw
+from guiBuild.search import gui
+from models.index_model import IndexModel
 
 
 class IndexView:
@@ -11,16 +13,14 @@ class IndexView:
         
         def relative_to_assets(path: str) -> Path:
             return ASSETS_PATH / Path(path)
-        
-        print("Ruta:", relative_to_assets("image_1.png"))
 
-        window = Tk()
+        self.window = Tk()
 
-        window.geometry("800x500")
-        window.configure(bg="#C4C4C4")
+        self.window.geometry("800x500")
+        self.window.configure(bg="#C4C4C4")
 
         canvas = Canvas(
-            window,
+            self.window,
             bg="#C4C4C4",
             height=500,
             width=800,
@@ -85,34 +85,33 @@ class IndexView:
             235.5,
             image=entry_image_1
         )
-        entry_1 = Entry(
+        self.entry_1 = Entry(
             bd=0,
             bg="#393939",
             fg="#000716",
             highlightthickness=0
         )
-        entry_1.place(
+        self.entry_1.place(
             x=144.0,
             y=212.0,
             width=261.0,
             height=45.0
         )
+       # Cargar la imagen con transparencia en formato PNG
+        self.lupa_image = PhotoImage(file=relative_to_assets("image_2.png"))
 
-        # Añadir la lupa al lado derecho del Entry
-        image_image_2 = PhotoImage(
-            file=relative_to_assets("image_2.png"))
-        image_2 = canvas.create_image(
-            440.0,  # Posición x ajustada para estar junto al Entry
-            235.0,  # Centrado en la misma altura que el Entry
-            image=image_image_2
-        )
+        # Colocar la imagen de la lupa en el canvas
+        image_2 = canvas.create_image(440.0, 235.0, image=self.lupa_image)
+
+        
+        self.model = IndexModel()
 
         # Añadir los textos
         canvas.create_text(
             135.0,
             185.0,
             anchor="nw",
-            text="Buscar artículo, libro, tesis...",
+            text="Buscar artículo, libro, revista...",
             fill="#FFFFFF",
             font=("IstokWeb Regular", 15 * -1)
         )
@@ -137,13 +136,75 @@ class IndexView:
 
         canvas.create_text(
             502.0,
-            333.0,
+            338.0,
             anchor="nw",
             text="Novedades",
             fill="#FFFFFF",
             font=("IstokWeb Regular", 15 * -1)
         )
-
+        
+        self.radio_var = StringVar(value="articulo")
+        
+        radio_button_1 = Radiobutton(
+            self.window,
+            text="Artículos",
+            variable=self.radio_var,
+            value="articulo",
+            bg="#1B1B1B",
+            fg="white",
+            activebackground="#393939",
+            activeforeground="white",
+            font=("IstokWeb Regular", 12),
+            selectcolor="#393939"
+        )
+        
+        radio_button_1.place(x=540.0, y=200.0)
+        
+        radio_button_2 = Radiobutton(
+            self.window,
+            text="Libros",
+            variable=self.radio_var,
+            value="libro",
+            bg="#1B1B1B",
+            fg="white",
+            activebackground="#393939",
+            activeforeground="white",
+            font=("IstokWeb Regular", 12),
+            selectcolor="#393939"
+        )
+        
+        radio_button_2.place(x=540.0, y=225.0)
+        
+        radio_button_3 = Radiobutton(
+            self.window,
+            text="Revistas",
+            variable=self.radio_var,
+            value="revista",
+            bg="#1B1B1B",
+            fg="white",
+            activebackground="#393939",
+            activeforeground="white",
+            font=("IstokWeb Regular", 12),
+            selectcolor="#393939"
+        )
+        
+        radio_button_3.place(x=540.0, y=250.0)
+        
+        def handle_radio_selection():
+            print(f"Seleccionaste: {self.radio_var.get()}")
+            return self.radio_var.get()
+        
+        def search_item():
+            filter = handle_radio_selection()
+            data = self.entry_1.get()
+            query = self.model.search(data,filter)
+            if not query:
+                self.controller.realizar_busqueda(self.window, None)
+            else:
+                self.controller.realizar_busqueda(self.window, query)
+        
+        canvas.tag_bind(image_2, "<Button-1>", lambda e: search_item())
+        
         # Añadir el banner superior con fondo y texto "Iniciar Sesión"
         canvas.create_rectangle(
             0.0,
@@ -162,12 +223,12 @@ class IndexView:
             image=image_image_3
         )
 
-        canvas.create_text(
+        login_text = canvas.create_text(
             644.0,
             23.0,
             anchor="nw",
             text="Iniciar Sesión",
-            fill="#FFFFFF",
+            fill="black",
             font=("IstokWeb Regular", 15 * -1)
         )
 
@@ -180,8 +241,30 @@ class IndexView:
             image=image_image_4
         )
 
-        window.resizable(False, False)
-        window.mainloop()
+        def on_hover(event):
+            # Cambiar color y subrayar al pasar el mouse
+            canvas.itemconfig(login_text, fill="white", font=("IstokWeb Bold", 15 * -1, "underline"))
 
+        def on_leave(event):
+            # Restaurar el estilo original cuando el mouse salga
+            canvas.itemconfig(login_text, fill="black", font=("IstokWeb Bold", 15 * -1))
+        
+        canvas.tag_bind(login_text, "<Button-1>", self.on_login_click)
+        canvas.tag_bind(login_text, "<Enter>", on_hover)  # Cuando el mouse entra
+        canvas.tag_bind(login_text, "<Leave>", on_leave)
+        
+        self.window.resizable(False, False)
+        self.window.mainloop()
+    
+    
+        
+    def on_login_click(self, event):
+        if self.controller:
+            print("Se encontró controlador")
+            self.controller.iniciar_sesion(self.window)
+        else:
+            print("No hay controlador")
+
+            
     def run(self):
         self.window.mainloop()
