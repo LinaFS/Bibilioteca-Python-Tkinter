@@ -13,7 +13,7 @@ class LoginModel:
             query = """
             SELECT id
             FROM Usuario
-            WHERE usuario = %s
+            WHERE nombre = %s
             AND contrasenia = %s
             """
             self.cursor.execute(query, (user, passwd))

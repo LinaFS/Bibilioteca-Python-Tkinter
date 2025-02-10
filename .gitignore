@@ -2,5 +2,5 @@ models/prbs.py
 models/__pycache__/
 controllers/__pycache__/
 views/__pycache__/
-base.env
 models/conexion.py
+guiBuild/search/__pycache__
