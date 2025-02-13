@@ -43,7 +43,7 @@ class FormAdmin:
 
             entry = tk.Text(self.form_frame, width=50, height=entry_height, bg="#d9d7d5")
             entry.grid(row=i * 2 + 2, column=0, padx=10, pady=(0, 10))
-            self.entries[var_name] = entr
+            self.entries[var_name] = entry
 
         self.siguiente_button = ttk.Button(
             self.form_frame, text="Siguiente ->", command=self.validar
