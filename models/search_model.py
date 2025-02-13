@@ -25,7 +25,7 @@ class SearchModel:
             
             articulos = [Articulo(*fila) for fila in resultados]
             
-            if resultados:
+            if len(resultados) != 0:
                 for articulo in articulos:
                     self.registrar_consulta(cursor, articulo.id_artic)
                     
@@ -69,3 +69,7 @@ class SearchModel:
         else:
             print("No se pudo conectar a la base de datos")
             return None
+    
+    def registrar_consulta(self, cursor, id_artic):
+        query_registro = "INSERT INTO consultas (id_artic) VALUES (%s)"
+        cursor.execute(query_registro, (id_artic,))  # Debe ser una tupla
