@@ -47,7 +47,5 @@ class IndexController:
         window.destroy()
         controller = NewsView(None)
         view = NewsController(controller)
-        controller.view = view
-        
-        controller.window.mainloop()
+        controller.run()
 
