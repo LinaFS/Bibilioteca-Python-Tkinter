@@ -3,7 +3,7 @@ from tkinter import Tk, Canvas, PhotoImage
 from PIL import Image, ImageTk
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\981011476\OneDrive\Documentos\Python\servicio\guiBuild\panelAdmin\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"assets/frame0")
 
 
 def relative_to_assets(path: str) -> Path:
