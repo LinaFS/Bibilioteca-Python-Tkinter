@@ -126,43 +126,52 @@ class NewsView:
         )
 
         self.results_canvas = Canvas(results_frame, bg="white")
-        scrollbar = Scrollbar(results_frame, orient="vertical", command=self.results_canvas.yview)
-        scrollable_frame = Frame(self.results_canvas, bg="white")
+        self.scrollbar = Scrollbar(results_frame, orient="vertical", command=self.results_canvas.yview)
+        self.scrollable_frame = Frame(self.results_canvas, bg="white")
 
-        scrollable_frame.bind(
+        self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.results_canvas.configure(
                 scrollregion=self.results_canvas.bbox("all")
             )
         )
 
-        self.results_canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        self.results_canvas.configure(yscrollcommand=scrollbar.set)
+        self.results_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.results_canvas.configure(yscrollcommand=self.scrollbar.set)
         self.results_canvas.bind_all("<MouseWheel>", self._on_mouse_wheel)
 
         # Empaquetar elementos
         self.results_canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        self.scrollbar.pack(side="right", fill="y")
 
-        # Agregar artículos dentro del área desplazable
-        for i in range(10):  # Agregar 10 artículos de ejemplo
-            resultado_item = Frame(scrollable_frame, bg="white", bd=1, relief="solid")
+        query = self.controller.mostrar_novedades()
+        if query:
+            self.generar_resultados(query)
+        else:
+            self.generar_resultados(None)
+        
+    def generar_resultados(self, articulos):
+        for widget in self.scrollable_frame.winfo_children():
+            widget.destroy()
+
+        for articulo in articulos:  # Agregar 10 artículos de ejemplo
+            resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
             resultado_item.pack(fill="x", padx=20, pady=10)
 
             # Título
             titulo_label = Label(
-                resultado_item, text=f"Artículo {i+1}", font=("Arial", 14, "bold"), bg="white", anchor="w"
+                resultado_item, text=articulo.titulo, font=("Arial", 14, "bold"), bg="white", anchor="w"
             )
             titulo_label.pack(fill="x", padx=10, pady=(10, 0))
 
             # Autor
-            autor_label = Label(resultado_item, text="Autor desconocido", font=("Arial", 12), bg="white", anchor="w")
+            autor_label = Label(resultado_item, text=articulo.autor, font=("Arial", 12), bg="white", anchor="w")
             autor_label.pack(fill="x", padx=10, pady=(0, 5))
 
             # Descripción
             descripcion_label = Label(
                 resultado_item,
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                text=articulo.resumen,
                 font=("Arial", 10),
                 bg="white",
                 anchor="w",
@@ -175,11 +184,13 @@ class NewsView:
             footer_frame = Frame(resultado_item, bg="white")
             footer_frame.pack(fill="x", padx=10, pady=(0, 10))
 
-            fecha_label = Label(footer_frame, text="Fecha publicación: Hoy", font=("Arial", 10), bg="white", anchor="w")
+            fecha_label = Label(footer_frame, text=f"Fecha publicación: {articulo.fecha}", font=("Arial", 10), bg="white", anchor="w")
             fecha_label.pack(side="left")
-
+            
             flecha_button = Button(footer_frame, text="→", font=("Arial", 14, "bold"), bg="white", bd=0, cursor="hand2")
             flecha_button.pack(side="right")
+        else:  # Si no hay artículos
+            print("bu")
     
     def _on_mouse_wheel(self, event):
         delta = -1 * (event.delta // 120)  # Normaliza el delta (Windows y Linux)

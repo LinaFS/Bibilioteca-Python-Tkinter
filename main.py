@@ -14,7 +14,6 @@ def main():
     
     conexion = init_conexion()
     
-    # Ejecutar la aplicación
     view.run()
 
 if __name__ == "__main__":

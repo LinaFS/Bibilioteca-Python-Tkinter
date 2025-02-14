@@ -45,7 +45,9 @@ class IndexController:
         
         print("Cambiando a página de novedades...")
         window.destroy()
-        controller = NewsView(None)
-        view = NewsController(controller)
-        controller.run()
+        controller = NewsController(None)
+        view = NewsView(controller)
+        controller.view = view
+
+        view.run()
 
