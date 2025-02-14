@@ -151,22 +151,37 @@ class NewsView:
             self.generar_resultados(None)
         
     def generar_resultados(self, articulos):
+        # Limpiar los widgets existentes
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
 
-        for articulo in articulos:  # Agregar 10 artículos de ejemplo
+        # Ajustar el ancho del frame para evitar desbordes
+        self.scrollable_frame.update_idletasks()
+
+        for articulo in articulos:
             resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-            resultado_item.pack(fill="x", padx=20, pady=10)
+            resultado_item.pack(fill="x", padx=(10, 20), pady=10)  # Más margen a la derecha (20px)
 
             # Título
             titulo_label = Label(
-                resultado_item, text=articulo.titulo, font=("Arial", 14, "bold"), bg="white", anchor="w"
+                resultado_item, 
+                text=articulo.titulo, 
+                font=("Arial", 14, "bold"), 
+                bg="white", 
+                anchor="w", 
+                wraplength=580  
             )
-            titulo_label.pack(fill="x", padx=10, pady=(10, 0))
+            titulo_label.pack(fill="x", padx=(10, 20), pady=(10, 0))  # Más margen a la derecha
 
             # Autor
-            autor_label = Label(resultado_item, text=articulo.autor, font=("Arial", 12), bg="white", anchor="w")
-            autor_label.pack(fill="x", padx=10, pady=(0, 5))
+            autor_label = Label(
+                resultado_item, 
+                text=articulo.autor, 
+                font=("Arial", 12), 
+                bg="white", 
+                anchor="w"
+            )
+            autor_label.pack(fill="x", padx=(10, 20), pady=(0, 5))  # Más margen a la derecha
 
             # Descripción
             descripcion_label = Label(
@@ -175,23 +190,38 @@ class NewsView:
                 font=("Arial", 10),
                 bg="white",
                 anchor="w",
-                wraplength=400,
-                justify="left",
+                wraplength=580,
+                justify="left"
             )
-            descripcion_label.pack(fill="x", padx=10, pady=(0, 10))
+            descripcion_label.pack(fill="x", padx=(10, 20), pady=(0, 10))  # Más margen a la derecha
 
-            # Pie de artículo con fecha y botón
+            # Pie con fecha y botón
             footer_frame = Frame(resultado_item, bg="white")
-            footer_frame.pack(fill="x", padx=10, pady=(0, 10))
+            footer_frame.pack(fill="x", padx=(10, 20), pady=(0, 10))  # Más margen a la derecha
 
-            fecha_label = Label(footer_frame, text=f"Fecha publicación: {articulo.fecha}", font=("Arial", 10), bg="white", anchor="w")
+            fecha_label = Label(
+                footer_frame, 
+                text=f"Fecha publicación: {articulo.fecha}", 
+                font=("Arial", 10), 
+                bg="white", 
+                anchor="w"
+            )
             fecha_label.pack(side="left")
-            
-            flecha_button = Button(footer_frame, text="→", font=("Arial", 14, "bold"), bg="white", bd=0, cursor="hand2")
+
+            flecha_button = Button(
+                footer_frame, 
+                text="→", 
+                font=("Arial", 14, "bold"), 
+                bg="white", 
+                bd=0, 
+                cursor="hand2"
+            )
             flecha_button.pack(side="right")
-        else:  # Si no hay artículos
-            print("bu")
-    
+
+        # Actualizar el Canvas
+        self.results_canvas.update_idletasks()
+        self.results_canvas.config(scrollregion=self.results_canvas.bbox("all"))
+
     def _on_mouse_wheel(self, event):
         delta = -1 * (event.delta // 120)  # Normaliza el delta (Windows y Linux)
         if self.window.tk.call("tk", "windowingsystem") == "aqua":  # macOS
