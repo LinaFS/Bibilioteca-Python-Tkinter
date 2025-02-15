@@ -1,7 +1,6 @@
 from pathlib import Path
-from tkinter import Button, Label, Tk, Canvas, Entry, PhotoImage, Radiobutton, StringVar, messagebox
+from tkinter import Tk, Canvas, Entry, PhotoImage, Radiobutton, StringVar, messagebox
 from PIL import Image, ImageTk, ImageDraw
-from guiBuild.search import gui
 from models.index_model import IndexModel
 
 
@@ -125,7 +124,7 @@ class IndexView:
             font=("IstokWeb Regular", 15 * -1)
         )
 
-        canvas.create_text(
+        self.leidos = canvas.create_text(
             204.0,
             338.0,
             anchor="nw",
@@ -134,7 +133,7 @@ class IndexView:
             font=("IstokWeb Regular", 15 * -1)
         )
 
-        canvas.create_text(
+        self.novedades = canvas.create_text(
             502.0,
             338.0,
             anchor="nw",
@@ -142,6 +141,8 @@ class IndexView:
             fill="#FFFFFF",
             font=("IstokWeb Regular", 15 * -1)
         )
+       
+        canvas.tag_bind(self.novedades, "<Button-1>", lambda e: self.controller.open_news_page(self.window))
         
         self.radio_var = StringVar(value="articulo")
         
@@ -256,7 +257,6 @@ class IndexView:
         self.window.resizable(False, False)
         self.window.mainloop()
     
-    
         
     def on_login_click(self, event):
         if self.controller:
@@ -264,6 +264,8 @@ class IndexView:
             self.controller.iniciar_sesion(self.window)
         else:
             print("No hay controlador")
+
+
 
             
     def run(self):
