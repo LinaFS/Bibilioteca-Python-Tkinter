@@ -39,15 +39,14 @@ class IndexController:
         
         view.run()
 
-    def open_news_page(self, window):
+    def open_news_page(self, window, tipo):
         from views.news_view import NewsView
         from controllers.news_controller import NewsController
         
         print("Cambiando a página de novedades...")
         window.destroy()
         controller = NewsController(None)
-        view = NewsView(controller)
+        view = NewsView(controller, tipo)
         controller.view = view
 
         view.run()
-

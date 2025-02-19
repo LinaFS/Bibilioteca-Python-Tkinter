@@ -3,10 +3,11 @@ from PIL import Image, ImageTk
 from pathlib import Path
 
 class NewsView:
-    def __init__(self, controller):
+    def __init__(self, controller, tipo):
         self.controller = controller
         OUTPUT_PATH = Path(__file__).parent
         ASSETS_PATH = OUTPUT_PATH / Path(r"../guiBuild/news/assets/frame0")
+        self.tipo = tipo
 
         def relative_to_assets(path: str) -> Path:
             return ASSETS_PATH / Path(path)
@@ -144,7 +145,10 @@ class NewsView:
         self.results_canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
-        query = self.controller.mostrar_novedades()
+        if self.tipo == "novedades":
+            query = self.controller.mostrar_novedades()
+        elif self.tipo == "leidos":
+            query = self.controller.mostrar_leidos()
         if query:
             self.generar_resultados(query)
         else:
@@ -158,69 +162,68 @@ class NewsView:
         # Ajustar el ancho del frame para evitar desbordes
         self.scrollable_frame.update_idletasks()
 
-        for articulo in articulos:
-            resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-            resultado_item.pack(fill="x", padx=(10, 20), pady=10)  # Más margen a la derecha (20px)
+        if articulos:
+            for articulo in articulos:
+                resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
+                resultado_item.pack(fill="x", padx=(10, 20), pady=10)  # Más margen a la derecha (20px)
 
-            # Título
-            titulo_label = Label(
-                resultado_item, 
-                text=articulo.titulo, 
-                font=("Arial", 14, "bold"), 
-                bg="white", 
-                anchor="w", 
-                wraplength=580  
-            )
-            titulo_label.pack(fill="x", padx=(10, 20), pady=(10, 0))  # Más margen a la derecha
+                # Título
+                titulo_label = Label(
+                    resultado_item, 
+                    text=articulo.titulo, 
+                    font=("Arial", 14, "bold"), 
+                    bg="white", 
+                    anchor="w", 
+                    wraplength=580  
+                )
+                titulo_label.pack(fill="x", padx=(10, 20), pady=(10, 0))  # Más margen a la derecha
 
-            # Autor
-            autor_label = Label(
-                resultado_item, 
-                text=articulo.autor, 
-                font=("Arial", 12), 
-                bg="white", 
-                anchor="w"
-            )
-            autor_label.pack(fill="x", padx=(10, 20), pady=(0, 5))  # Más margen a la derecha
+                # Autor
+                autor_label = Label(
+                    resultado_item, 
+                    text=articulo.autor, 
+                    font=("Arial", 12), 
+                    bg="white", 
+                    anchor="w"
+                )
+                autor_label.pack(fill="x", padx=(10, 20), pady=(0, 5))  # Más margen a la derecha
 
-            # Descripción
-            descripcion_label = Label(
-                resultado_item,
-                text=articulo.resumen,
-                font=("Arial", 10),
-                bg="white",
-                anchor="w",
-                wraplength=580,
-                justify="left"
-            )
-            descripcion_label.pack(fill="x", padx=(10, 20), pady=(0, 10))  # Más margen a la derecha
+                # Descripción
+                descripcion_label = Label(
+                    resultado_item,
+                    text=articulo.resumen,
+                    font=("Arial", 10),
+                    bg="white",
+                    anchor="w",
+                    wraplength=580,
+                    justify="left"
+                )
+                descripcion_label.pack(fill="x", padx=(10, 20), pady=(0, 10))  # Más margen a la derecha
 
-            # Pie con fecha y botón
-            footer_frame = Frame(resultado_item, bg="white")
-            footer_frame.pack(fill="x", padx=(10, 20), pady=(0, 10))  # Más margen a la derecha
+                # Pie con fecha y botón
+                footer_frame = Frame(resultado_item, bg="white")
+                footer_frame.pack(fill="x", padx=(10, 20), pady=(0, 10))  # Más margen a la derecha
 
-            fecha_label = Label(
-                footer_frame, 
-                text=f"Fecha publicación: {articulo.fecha}", 
-                font=("Arial", 10), 
-                bg="white", 
-                anchor="w"
-            )
-            fecha_label.pack(side="left")
+                fecha_label = Label(
+                    footer_frame, 
+                    text=f"Fecha publicación: {articulo.fecha}", 
+                    font=("Arial", 10), 
+                    bg="white", 
+                    anchor="w"
+                )
+                fecha_label.pack(side="left")
 
-            flecha_button = Button(
-                footer_frame, 
-                text="→", 
-                font=("Arial", 14, "bold"), 
-                bg="white", 
-                bd=0, 
-                cursor="hand2"
-            )
-            flecha_button.pack(side="right")
-
-        # Actualizar el Canvas
-        self.results_canvas.update_idletasks()
-        self.results_canvas.config(scrollregion=self.results_canvas.bbox("all"))
+                flecha_button = Button(
+                    footer_frame, 
+                    text="→", 
+                    font=("Arial", 14, "bold"), 
+                    bg="white", 
+                    bd=0, 
+                    cursor="hand2"
+                )
+                flecha_button.pack(side="right")
+        else:
+            print("No hay")
 
     def _on_mouse_wheel(self, event):
         delta = -1 * (event.delta // 120)  # Normaliza el delta (Windows y Linux)

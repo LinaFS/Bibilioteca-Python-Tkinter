@@ -133,6 +133,8 @@ class IndexView:
             font=("IstokWeb Regular", 15 * -1)
         )
 
+        canvas.tag_bind(self.leidos, "<Button-1>", lambda e: self.controller.open_news_page(self.window, "leidos"))
+
         self.novedades = canvas.create_text(
             502.0,
             338.0,
@@ -142,7 +144,7 @@ class IndexView:
             font=("IstokWeb Regular", 15 * -1)
         )
        
-        canvas.tag_bind(self.novedades, "<Button-1>", lambda e: self.controller.open_news_page(self.window))
+        canvas.tag_bind(self.novedades, "<Button-1>", lambda e: self.controller.open_news_page(self.window, "novedades"))
         
         self.radio_var = StringVar(value="articulo")
         
