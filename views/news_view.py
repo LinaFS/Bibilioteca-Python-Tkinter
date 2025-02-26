@@ -71,6 +71,11 @@ class NewsView:
             image=self.image_home
         )
 
+        self.image_home_black = set_image("home_black.png")
+
+        canvas.tag_bind(self.img_home, "<Button-1>", lambda e: self.controller.open_index_view(self.window))
+
+
         self.home = canvas.create_text(
             65.0,
             100.0,
@@ -80,12 +85,18 @@ class NewsView:
             font=("Inter", 15 * -1)
         )
 
+        canvas.tag_bind(self.home, "<Button-1>", lambda e: self.controller.open_index_view(self.window))
+
         self.image_content = set_image("content.png")
         self.img_content = canvas.create_image(
             32.0,
             170.0,
             image=self.image_content
         )
+
+        self.image_content_black = set_image("content_black.png")
+
+        canvas.tag_bind(self.img_content, "<Button-1>", lambda e: self.controller.open_search_view(self.window))
 
         self.content = canvas.create_text(
             65.0,
@@ -96,12 +107,16 @@ class NewsView:
             font=("Inter", 15 * -1)
         )
 
+        canvas.tag_bind(self.content, "<Button-1>", lambda e: self.controller.open_search_view(self.window))
+
         self.image_views = set_image("views.png")
         self.img_views = canvas.create_image(
             32.0,
             230.0,
             image=self.image_views
         )
+
+        self.image_views_black = set_image("views_black.png")
 
         self.views = canvas.create_text(
             65.0,
@@ -111,6 +126,28 @@ class NewsView:
             fill="#FFFFFF",
             font=("Inter", 15 * -1)
         )
+
+        def apply_hover_effect_combined(canvas, image_id, text_id, image_hover, image_default, text_hover="black", text_default="white"):
+            """Cambia la imagen y el color del texto simultáneamente al pasar el mouse."""
+            def on_enter(event):
+                canvas.itemconfig(image_id, image=image_hover)
+                canvas.itemconfig(text_id, fill=text_hover)
+
+            def on_leave(event):
+                canvas.itemconfig(image_id, image=image_default)
+                canvas.itemconfig(text_id, fill=text_default)
+
+            canvas.tag_bind(image_id, "<Enter>", on_enter)
+            canvas.tag_bind(text_id, "<Enter>", on_enter)
+            canvas.tag_bind(image_id, "<Leave>", on_leave)
+            canvas.tag_bind(text_id, "<Leave>", on_leave)
+
+
+
+        apply_hover_effect_combined(canvas, self.img_home, self.home, self.image_home_black, self.image_home)
+        apply_hover_effect_combined(canvas, self.img_content, self.content, self.image_content_black, self.image_content)
+        apply_hover_effect_combined(canvas, self.img_views, self.views, self.image_views_black, self.image_views)
+
 
         # Results area
 
@@ -165,7 +202,7 @@ class NewsView:
         if articulos:
             for articulo in articulos:
                 resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-                resultado_item.pack(fill="x", padx=(10, 20), pady=10)  # Más margen a la derecha (20px)
+                resultado_item.pack(fill="x", padx=20, pady=10)  # Más margen a la derecha (20px)
 
                 # Título
                 titulo_label = Label(
@@ -174,9 +211,9 @@ class NewsView:
                     font=("Arial", 14, "bold"), 
                     bg="white", 
                     anchor="w", 
-                    wraplength=580  
+                    wraplength=540  
                 )
-                titulo_label.pack(fill="x", padx=(10, 20), pady=(10, 0))  # Más margen a la derecha
+                titulo_label.pack(fill="x", padx=10, pady=(0, 10))  # Más margen a la derecha
 
                 # Autor
                 autor_label = Label(
@@ -184,9 +221,10 @@ class NewsView:
                     text=articulo.autor, 
                     font=("Arial", 12), 
                     bg="white", 
-                    anchor="w"
+                    anchor="w",
+                    wraplength=540
                 )
-                autor_label.pack(fill="x", padx=(10, 20), pady=(0, 5))  # Más margen a la derecha
+                autor_label.pack(fill="x", padx=10, pady=(0, 5))  # Más margen a la derecha
 
                 # Descripción
                 descripcion_label = Label(
@@ -195,14 +233,14 @@ class NewsView:
                     font=("Arial", 10),
                     bg="white",
                     anchor="w",
-                    wraplength=580,
+                    wraplength=540,
                     justify="left"
                 )
-                descripcion_label.pack(fill="x", padx=(10, 20), pady=(0, 10))  # Más margen a la derecha
+                descripcion_label.pack(fill="x", padx=10, pady=(0, 10))  # Más margen a la derecha
 
                 # Pie con fecha y botón
                 footer_frame = Frame(resultado_item, bg="white")
-                footer_frame.pack(fill="x", padx=(10, 20), pady=(0, 10))  # Más margen a la derecha
+                footer_frame.pack(fill="x", padx=10, pady=(0, 10))  # Más margen a la derecha
 
                 fecha_label = Label(
                     footer_frame, 
@@ -234,3 +272,5 @@ class NewsView:
     def run(self):
         """Inicia el loop principal de Tkinter."""
         self.window.mainloop()
+
+

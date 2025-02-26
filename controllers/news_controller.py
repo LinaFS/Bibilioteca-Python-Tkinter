@@ -19,4 +19,36 @@ class NewsController:
         if len(resultados) == 0:
             return None
         else:
-            return resultados  
+            return resultados
+
+    def open_most_view(self, window):
+        from views.index_view import IndexView
+        from controllers.index_controller import IndexController
+        print("Cambiando a la vista de búsqueda...")
+        window.destroy()  # Cierra la ventana actual
+        controller = IndexController(None)
+        view = IndexView(controller)
+        controller.view = view
+        view.run()
+
+    def open_index_view(self, window):
+        # Importar dentro del método
+        from views.index_view import IndexView
+        from controllers.index_controller import IndexController
+        
+        window.destroy()
+        controller = IndexController(None)  # Inicialmente el controlador no tiene vista
+        view = IndexView(controller)  # Ahora le pasamos el controlador
+        controller.view = view  # Asegúrate de que el controlador tiene la vista
+        
+        view.run()
+
+    def open_search_view(self, window, query):
+        from views.search_view import SearchView
+        from controllers.search_controller import SearchController
+        print("Cambiando a la vista de búsqueda...")
+        window.destroy()  # Cierra la ventana actual
+        controller = SearchController(None, query)
+        view = SearchView(controller)
+        controller.view = view
+        view.run()
