@@ -2,11 +2,11 @@ from tkinter import Tk, Canvas, Frame, Label, Button, Scrollbar
 from PIL import Image, ImageTk
 from pathlib import Path
 
-class NewsView:
+class ViewsView:
     def __init__(self, controller):
         self.controller = controller
         OUTPUT_PATH = Path(__file__).parent
-        ASSETS_PATH = OUTPUT_PATH / Path(r"../guiBuild/news/assets/frame0")
+        ASSETS_PATH = OUTPUT_PATH / Path(r"../guiBuild/views/assets/frame0")
 
         def relative_to_assets(path: str) -> Path:
             return ASSETS_PATH / Path(path)
@@ -108,18 +108,16 @@ class NewsView:
 
         canvas.tag_bind(self.content, "<Button-1>", lambda e: self.controller.open_search_view(self.window))
 
-        self.image_views = set_image("views.png")
-        self.img_views = canvas.create_image(
+        self.image_news = set_image("news.png")
+        self.img_news = canvas.create_image(
             32.0,
             230.0,
-            image=self.image_views
+            image=self.image_news
         )
 
-        self.image_views_black = set_image("views_black.png")
+        self.image_news_black = set_image("news_black.png")
 
-        canvas.tag_bind(self.img_views, "<Button-1>", lambda e: self.controller.open_most_view(self.window))
-
-        self.views = canvas.create_text(
+        self.news = canvas.create_text(
             65.0,
             222.0,
             anchor="nw",
@@ -127,8 +125,6 @@ class NewsView:
             fill="#FFFFFF",
             font=("Inter", 15 * -1)
         )
-
-        canvas.tag_bind(self.views, "<Button-1>", lambda e: self.controller.open_most_view(self.window))
 
         def apply_hover_effect_combined(canvas, image_id, text_id, image_hover, image_default, text_hover="black", text_default="white"):
             """Cambia la imagen y el color del texto simultáneamente al pasar el mouse."""
@@ -149,7 +145,7 @@ class NewsView:
 
         apply_hover_effect_combined(canvas, self.img_home, self.home, self.image_home_black, self.image_home)
         apply_hover_effect_combined(canvas, self.img_content, self.content, self.image_content_black, self.image_content)
-        apply_hover_effect_combined(canvas, self.img_views, self.views, self.image_views_black, self.image_views)
+        apply_hover_effect_combined(canvas, self.img_news, self.news, self.image_news_black, self.image_news)
 
 
         # Results area
@@ -185,8 +181,8 @@ class NewsView:
         self.results_canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
-        query = self.controller.mostrar_novedades()
-        
+        query = self.controller.mostrar_leidos()
+            
         if query:
             self.generar_resultados(query)
         else:

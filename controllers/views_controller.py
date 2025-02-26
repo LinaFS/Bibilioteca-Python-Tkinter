@@ -1,25 +1,25 @@
-from models.news_model import NewsModel
+from models.views_model import ViewsModel
 
-class NewsController:
+class ViewsController:
     def __init__(self, view):
         self.view = view
-        self.model = NewsModel()
-
-    def mostrar_novedades(self):
+        self.model = ViewsModel()   
+    
+    def mostrar_leidos(self):
         """Lógica para mostrar los artículos en novedades."""     
-        resultados = self.model.buscar_novedades()
+        resultados = self.model.buscar_mas_leidos()
         if len(resultados) == 0:
             return None
         else:
-            return resultados   
+            return resultados
 
-    def open_most_view(self, window):
-        from views.views_view import ViewsView
-        from controllers.views_controller import ViewsController
+    def open_news_view(self, window):
+        from views.news_view import NewsView
+        from controllers.news_controller import NewsController
         print("Cambiando a la vista de búsqueda...")
         window.destroy()  # Cierra la ventana actual
-        controller = ViewsController(None)
-        view = ViewsView(controller)
+        controller = NewsController(None)
+        view = NewsView(controller)
         controller.view = view
         view.run()
 
