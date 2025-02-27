@@ -49,7 +49,7 @@ class ViewsView:
             315.0,
             13.0,
             anchor="nw",
-            text="Novedades",
+            text="Más leídos",
             fill="#FFFFFF",
             font=("IstokWeb Regular", 30 * -1)
         )
@@ -95,7 +95,7 @@ class ViewsView:
 
         self.image_content_black = set_image("content_black.png")
 
-        canvas.tag_bind(self.img_content, "<Button-1>", lambda e: self.controller.open_search_view(self.window))
+        canvas.tag_bind(self.img_content, "<Button-1>", lambda e: self.controller.open_search_view(self.window, None))
 
         self.content = canvas.create_text(
             65.0,
@@ -106,7 +106,7 @@ class ViewsView:
             font=("Inter", 15 * -1)
         )
 
-        canvas.tag_bind(self.content, "<Button-1>", lambda e: self.controller.open_search_view(self.window))
+        canvas.tag_bind(self.content, "<Button-1>", lambda e: self.controller.open_search_view(self.window, None))
 
         self.image_news = set_image("news.png")
         self.img_news = canvas.create_image(
@@ -121,10 +121,13 @@ class ViewsView:
             65.0,
             222.0,
             anchor="nw",
-            text="Más leído",
+            text="Novedades",
             fill="#FFFFFF",
             font=("Inter", 15 * -1)
         )
+
+        canvas.tag_bind(self.img_news, "<Button-1>", lambda e: self.controller.open_news_view(self.window))
+        canvas.tag_bind(self.news, "<Button-1>", lambda e: self.controller.open_news_view(self.window))
 
         def apply_hover_effect_combined(canvas, image_id, text_id, image_hover, image_default, text_hover="black", text_default="white"):
             """Cambia la imagen y el color del texto simultáneamente al pasar el mouse."""

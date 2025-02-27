@@ -54,7 +54,7 @@ class IndexController:
     def open_views_page(self, window):
         from views.views_view import ViewsView
         from controllers.views_controller import ViewsController
-        print("Cambiando a la vista de búsqueda...")
+        print("Cambiando a la vista de Vistas...")
         window.destroy()  # Cierra la ventana actual
         controller = ViewsController(None)
         view = ViewsView(controller)

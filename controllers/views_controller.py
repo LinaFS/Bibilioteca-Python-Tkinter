@@ -16,7 +16,7 @@ class ViewsController:
     def open_news_view(self, window):
         from views.news_view import NewsView
         from controllers.news_controller import NewsController
-        print("Cambiando a la vista de búsqueda...")
+        print("Cambiando a la vista de novedades...")
         window.destroy()  # Cierra la ventana actual
         controller = NewsController(None)
         view = NewsView(controller)

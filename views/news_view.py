@@ -95,7 +95,7 @@ class NewsView:
 
         self.image_content_black = set_image("content_black.png")
 
-        canvas.tag_bind(self.img_content, "<Button-1>", lambda e: self.controller.open_search_view(self.window))
+        canvas.tag_bind(self.img_content, "<Button-1>", lambda e: self.controller.open_search_view(self.window, None))
 
         self.content = canvas.create_text(
             65.0,
@@ -106,7 +106,7 @@ class NewsView:
             font=("Inter", 15 * -1)
         )
 
-        canvas.tag_bind(self.content, "<Button-1>", lambda e: self.controller.open_search_view(self.window))
+        canvas.tag_bind(self.content, "<Button-1>", lambda e: self.controller.open_search_view(self.window, None))
 
         self.image_views = set_image("views.png")
         self.img_views = canvas.create_image(
