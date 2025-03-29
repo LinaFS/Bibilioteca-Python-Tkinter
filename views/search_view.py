@@ -1,225 +1,343 @@
-from tkinter import Tk, Frame, Label, Entry, Button, Radiobutton, StringVar, Scrollbar, Canvas
+from tkinter import Frame, Label, Entry, Button, Radiobutton, StringVar, Scrollbar, Canvas
 from pathlib import Path
+import tkinter as tk
 
 
-class SearchView:
-    def __init__(self, controller):
+class SearchView(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
         self.controller = controller
-        OUTPUT_PATH = Path(__file__).parent
-
-        data=self.controller.get_data()
+        self.parent = parent
         
-        self.window = Tk()
-        self.window.geometry("800x500")  # Dimensiones de la ventana
-        self.window.configure(bg="#FFFFFF")  # Fondo blanco
-        self.window.title("Search View")  # Título de la ventana
-        self.window.resizable(False, False)
-
-        # Colores personalizados
-        self.fondo_rojo = "#BC9585"
-        self.fondo_azul = "#1B1B1B"  # Color oscuro para el fondo
-        self.fondo_marron = "#5a3d31"
-        self.fondo_texto = "#828282"
-        self.fondo_resultados = "#f5f5f5"  # Color claro para resultados
-        self.texto_blanco = "#ffffff"
-        self.texto_negro = "#000000"
-
-        # Barra superior
-        self.barra_superior = Frame(self.window, bg=self.fondo_rojo, height=60)
-        self.barra_superior.pack(side="top", fill="x")
-
-        # Botón de regreso a índice (casita)
-        self.boton_casita = Button(
-            self.barra_superior,
+        # Configuración inicial
+        self._setup_colors()
+        self._configure_grid()
+        self._create_ui_structure()
+        self._setup_results_area()
+        self._display_initial_results()
+    
+    def _setup_colors(self):
+        """Define los colores personalizados"""
+        self.colors = {
+            'red_bg': "#BC9585",
+            'blue_bg': "#1B1B1B",
+            'brown_bg': "#5a3d31",
+            'text_bg': "#828282",
+            'results_bg': "#f5f5f5",
+            'white_text': "#ffffff",
+            'black_text': "#000000",
+            'white_bg': "#FFFFFF"
+        }
+    
+    def _configure_grid(self):
+        """Configura el sistema de grid principal"""
+        self.grid(row=0, column=0, sticky="nsew")
+        self.parent.grid_rowconfigure(0, weight=1)
+        self.parent.grid_columnconfigure(0, weight=1)
+        self.configure(bg=self.colors['white_bg'])
+    
+    def _create_ui_structure(self):
+        """Crea la estructura principal de la interfaz"""
+        self._create_top_bar()
+        self._create_main_area()
+    
+    def _create_top_bar(self):
+        """Crea la barra superior con el buscador"""
+        # Frame principal
+        self.top_bar = Frame(self, bg=self.colors['red_bg'], height=60)
+        self.top_bar.grid(row=0, column=0, sticky="ew")
+        self.grid_columnconfigure(0, weight=1)
+        
+        # Configuración de columnas
+        self.top_bar.grid_columnconfigure(0, weight=1)
+        self.top_bar.grid_columnconfigure(1, weight=0)
+        
+        # Botón de inicio
+        self.home_button = Button(
+            self.top_bar,
             text="🏠",
-            bg=self.fondo_rojo,
-            fg=self.texto_negro,
+            bg=self.colors['red_bg'],
+            fg=self.colors['black_text'],
             font=("nw", 16),
             bd=0,
-            command=self.regresar_index,
+            command=self._return_to_index,
         )
-        self.boton_casita.pack(side="left", padx=10, pady=10)
-
-        # Barra de búsqueda sin título
-        self.busqueda_frame = Frame(self.barra_superior, bg=self.fondo_rojo)
-        self.busqueda_frame.pack(side="right", padx=10)
-
-        self.entrada_busqueda = Entry(
-            self.busqueda_frame, font=("nw", 10), width=40
-        )
-        self.entrada_busqueda.pack(side="left", padx=10)
+        self.home_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
         
-        def buscar_articulos(texto, filter):
-            query = self.controller.buscar(texto,filter)
-            if query:
-                    self.generar_resultados(query)
-            else:
-                self.generar_resultados(None)
-
-        self.lupa_boton = Button(
-            self.busqueda_frame,
+        # Frame de búsqueda
+        self.search_frame = Frame(self.top_bar, bg=self.colors['red_bg'])
+        self.search_frame.grid(row=0, column=1, padx=10, sticky="e")
+        self.search_frame.grid_columnconfigure(0, weight=1)
+        
+        # Campo de búsqueda
+        self.search_entry = Entry(
+            self.search_frame, 
+            font=("nw", 10), 
+            width=40
+        )
+        self.search_entry.grid(row=0, column=0, padx=10)
+        
+        # Botón de búsqueda
+        self.search_button = Button(
+            self.search_frame,
             text="🔍",
-            bg=self.fondo_rojo,
-            fg=self.texto_negro,
+            bg=self.colors['red_bg'],
+            fg=self.colors['black_text'],
             font=("Arial", 12),
-            command=lambda: buscar_articulos(self.entrada_busqueda.get(), self.filtro_var.get()),
+            command=self._perform_search,
         )
-        self.lupa_boton.pack(side="left")
-
-        # Área principal
-        self.area_principal = Frame(self.window, bg=self.fondo_azul)
-        self.area_principal.pack(expand=True, fill="both")
-
-        # Filtros de búsqueda (lado izquierdo)
-        self.filtros_frame = Frame(self.area_principal, bg=self.fondo_azul, width=200)
-        self.filtros_frame.pack(side="left", fill="y")
-
-        self.filtros_label = Label(
-            self.filtros_frame,
+        self.search_button.grid(row=0, column=1)
+    
+    def _create_main_area(self):
+        """Crea el área principal con filtros y resultados"""
+        self.main_area = Frame(self, bg=self.colors['blue_bg'])
+        self.main_area.grid(row=1, column=0, sticky="nsew")
+        self.grid_rowconfigure(1, weight=1)
+        
+        # Configuración de columnas
+        self.main_area.grid_columnconfigure(0, weight=0)  # Filtros
+        self.main_area.grid_columnconfigure(1, weight=1)  # Resultados
+        self.main_area.grid_rowconfigure(0, weight=1)
+        
+        self._create_filters_section()
+        self._create_results_section()
+    
+    def _create_filters_section(self):
+        """Crea la sección de filtros"""
+        self.filters_frame = Frame(
+            self.main_area, 
+            bg=self.colors['blue_bg'], 
+            width=200
+        )
+        self.filters_frame.grid(row=0, column=0, sticky="ns")
+        
+        # Título
+        Label(
+            self.filters_frame,
             text="Filtros de búsqueda",
-            bg=self.fondo_azul,
-            fg=self.texto_blanco,
+            bg=self.colors['blue_bg'],
+            fg=self.colors['white_text'],
             font=("nw", 12, "bold"),
-        )
-        self.filtros_label.pack(pady=(10,0), padx=(10,0))
-
-        # Radios para filtros
-        self.opciones = ["Articulo", "Libro", "Revista"]
-        self.filtro_var = StringVar(value=self.opciones[0])
-
-        for opcion in self.opciones:
+        ).grid(row=0, column=0, pady=(10, 0), padx=10, sticky="w")
+        
+        # Radio buttons
+        self.filter_var = StringVar(value="Articulo")
+        self.filter_options = ["Articulo", "Libro", "Revista"]
+        
+        for i, option in enumerate(self.filter_options, start=1):
             Radiobutton(
-                self.filtros_frame,
-                text=opcion,
-                variable=self.filtro_var,
-                value=opcion,
-                bg=self.fondo_azul,
-                fg=self.texto_blanco,
-                selectcolor=self.fondo_marron,
-            ).pack(anchor="w", padx=10, pady=5)
-
-        # Área de resultados (lado derecho)
-        self.resultados_frame = Frame(self.area_principal, bg=self.fondo_resultados)
-        self.resultados_frame.pack(side="left", expand=True, fill="both", padx=20, pady=20)
-
-        # Scrollbar y Canvas para resultados
-        self.canvas = Canvas(self.resultados_frame, bg=self.fondo_resultados)
-        self.scrollbar = Scrollbar(
-            self.resultados_frame, orient="vertical", command=self.canvas.yview
+                self.filters_frame,
+                text=option,
+                variable=self.filter_var,
+                value=option,
+                bg=self.colors['blue_bg'],
+                fg=self.colors['white_text'],
+                selectcolor=self.colors['brown_bg'],
+            ).grid(row=i, column=0, padx=10, pady=5, sticky="w")
+    
+    def _create_results_section(self):
+        """Crea la sección de resultados"""
+        self.results_container = Frame(
+            self.main_area, 
+            bg=self.colors['results_bg']
         )
-        self.scrollable_frame = Frame(self.canvas, bg=self.fondo_resultados)
-
-        # Configuración del scrollbar
+        self.results_container.grid(
+            row=0, column=1, 
+            sticky="nsew", 
+            padx=20, pady=20
+        )
+        
+        # Canvas y scrollbar
+        self.results_canvas = Canvas(
+            self.results_container, 
+            bg=self.colors['results_bg']
+        )
+        self.scrollbar = Scrollbar(
+            self.results_container, 
+            orient="vertical", 
+            command=self.results_canvas.yview
+        )
+        
+        # Frame desplazable
+        self.scrollable_frame = Frame(
+            self.results_canvas, 
+            bg=self.colors['results_bg']
+        )
         self.scrollable_frame.bind(
             "<Configure>",
-            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+            lambda e: self.results_canvas.configure(
+                scrollregion=self.results_canvas.bbox("all")
+            )
         )
-
-        # Crear la ventana dentro del canvas
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-
-        # Configuración del scrollbar
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-
-        # Agregar widgets a la ventana del canvas
-        self.canvas.pack(side="left", fill="both", expand=True)
-        self.scrollbar.pack(side="left", fill="y")
-        self.canvas.bind_all("<MouseWheel>", self._on_mouse_wheel)
         
-        self.generar_resultados(data)
+        # Configuración del canvas
+        self.results_canvas.create_window(
+            (0, 0), 
+            window=self.scrollable_frame, 
+            anchor="nw"
+        )
+        self.results_canvas.configure(
+            yscrollcommand=self.scrollbar.set
+        )
+        
+        # Layout
+        self.results_canvas.grid(row=0, column=0, sticky="nsew")
+        self.scrollbar.grid(row=0, column=1, sticky="ns")
+        
+        self.results_container.grid_rowconfigure(0, weight=1)
+        self.results_container.grid_columnconfigure(0, weight=1)
+        
+        # Evento de scroll con rueda del mouse
+        self.results_canvas.bind_all(
+            "<MouseWheel>", 
+            self._on_mouse_wheel
+        )
     
-    def generar_resultados(self, articulos):
+    def _setup_results_area(self):
+        """Configuración adicional del área de resultados"""
+        pass
+    
+    def _display_initial_results(self):
+        """Muestra los resultados iniciales"""
+        initial_data = self.controller.get_data()
+        self._generate_results(initial_data)
+    
+    def _generate_results(self, articles):
+        """Genera los widgets para mostrar los resultados"""
+        # Limpiar resultados anteriores
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
-
-        if articulos:  # Si hay artículos
-            for articulo in articulos:
-                resultado_item = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
-                resultado_item.pack(fill="x", padx=30, pady=10)
-
-                # Título
-                titulo_label = Label(
-                    resultado_item,
-                    text=articulo.titulo,
-                    font=("Arial", 14, "bold"),
-                    bg="white",
-                    anchor="w",
-                    wraplength=500,
-                    justify="left",
-                )
-                titulo_label.pack(fill="x", padx=10, pady=(10, 0))
-
-                # Autor
-                autor_label = Label(
-                    resultado_item,
-                    text=articulo.autor,
-                    font=("Arial", 12),
-                    bg="white",
-                    anchor="w",
-                    wraplength=500,
-                    justify="left",
-                )
-                autor_label.pack(fill="x", padx=10, pady=(0, 5))
-
-                # Descripción
-                descripcion_label = Label(
-                    resultado_item,
-                    text=articulo.resumen,
-                    font=("Arial", 10),
-                    bg="white",
-                    anchor="w",
-                    wraplength=500,
-                    justify="center",
-                )
-                descripcion_label.pack(fill="x", padx=10, pady=(0, 10))
-
-                # Fecha y flecha (lado derecho)
-                footer_frame = Frame(resultado_item, bg="white")
-                footer_frame.pack(fill="x", padx=10, pady=(0, 10))
-
-                fecha_label = Label(
-                    footer_frame,
-                    text=articulo.fecha,
-                    font=("Arial", 10),
-                    bg="white",
-                    anchor="w",
-                )
-                fecha_label.pack(side="left")
-
-                flecha_button = Button(
-                    footer_frame,
-                    text="→",
-                    font=("Arial", 14, "bold"),
-                    bg="white",
-                    bd=0,
-                    cursor="hand2",
-                )
-                flecha_button.pack(side="right")
-        else:  # Si no hay artículos
-            mensaje_label = Label(
-                self.scrollable_frame,
-                text="No se encontraron resultados.",
-                font=("Arial", 20, "bold"),
-                fg="gray",
-                bg=self.fondo_resultados,
-                anchor="center",
-            )
-            mensaje_label.pack(fill="both", expand=True, pady=20)
-
-
-    def regresar_index(self):
+        
+        if not articles:
+            self._show_no_results_message()
+            return
+        
+        for i, article in enumerate(articles):
+            self._create_article_widget(i, article)
+    
+    def _create_article_widget(self, index, article):
+        """Crea un widget para un artículo individual"""
+        # Frame principal
+        article_frame = Frame(
+            self.scrollable_frame,
+            bg=self.colors['white_bg'],
+            bd=1,
+            relief="solid"
+        )
+        article_frame.grid(
+            row=index, column=0, 
+            sticky="ew", 
+            padx=30, pady=10
+        )
+        article_frame.grid_columnconfigure(0, weight=1)
+        
+        # Título
+        title_label = Label(
+            article_frame,
+            text=article.titulo,
+            font=("Arial", 14, "bold"),
+            bg=self.colors['white_bg'],
+            anchor="w",
+            wraplength=500,
+            justify="left",
+        )
+        title_label.grid(
+            row=0, column=0, 
+            sticky="w", 
+            padx=10, pady=(10, 0)
+        )
+        
+        # Autor
+        author_label = Label(
+            article_frame,
+            text=article.autor,
+            font=("Arial", 12),
+            bg=self.colors['white_bg'],
+            anchor="w",
+            wraplength=500,
+            justify="left",
+        )
+        author_label.grid(
+            row=1, column=0, 
+            sticky="w", 
+            padx=10, pady=(0, 5)
+        )
+        
+        # Descripción
+        description_label = Label(
+            article_frame,
+            text=article.resumen,
+            font=("Arial", 10),
+            bg=self.colors['white_bg'],
+            anchor="w",
+            wraplength=500,
+            justify="center",
+        )
+        description_label.grid(
+            row=2, column=0, 
+            sticky="w", 
+            padx=10, pady=(0, 10)
+        )
+        
+        # Pie de artículo
+        footer = Frame(article_frame, bg=self.colors['white_bg'])
+        footer.grid(
+            row=3, column=0, 
+            sticky="ew", 
+            padx=10, pady=(0, 10)
+        )
+        footer.grid_columnconfigure(0, weight=1)
+        
+        # Fecha
+        date_label = Label(
+            footer,
+            text=article.fecha,
+            font=("Arial", 10),
+            bg=self.colors['white_bg'],
+            anchor="w",
+        )
+        date_label.grid(row=0, column=0, sticky="w")
+        
+        # Botón de flecha
+        arrow_button = Button(
+            footer,
+            text="→",
+            font=("Arial", 14, "bold"),
+            bg=self.colors['white_bg'],
+            bd=0,
+            cursor="hand2",
+        )
+        arrow_button.grid(row=0, column=1, sticky="e")
+    
+    def _show_no_results_message(self):
+        """Muestra un mensaje cuando no hay resultados"""
+        Label(
+            self.scrollable_frame,
+            text="No se encontraron resultados.",
+            font=("Arial", 20, "bold"),
+            fg="gray",
+            bg=self.colors['results_bg'],
+            anchor="center",
+        ).grid(row=0, column=0, sticky="nsew", pady=20)
+    
+    def _perform_search(self):
+        """Realiza una búsqueda con los parámetros actuales"""
+        search_text = self.search_entry.get()
+        filter_type = self.filter_var.get()
+        results = self.controller.buscar(search_text, filter_type)
+        self._generate_results(results)
+    
+    def _return_to_index(self):
+        """Regresa a la vista de índice"""
         if self.controller:
-            print("Regresando al índice...")
-            self.controller.open_index_view(self.window)
-        else:
-            print("No hay índice...")
+            self.controller.open_index_view()
+    
     def _on_mouse_wheel(self, event):
-    # Ajuste de desplazamiento (positivos son hacia abajo, negativos hacia arriba)
-        delta = -1 * (event.delta // 120)  # Normaliza el delta (Windows y Linux)
-        if self.window.tk.call("tk", "windowingsystem") == "aqua":  # macOS
+        """Maneja el scroll con la rueda del mouse"""
+        delta = -1 * (event.delta // 120)  # Normaliza para Windows/Linux
+        if self.parent.tk.call("tk", "windowingsystem") == "aqua":  # macOS
             delta = event.delta
-        self.canvas.yview_scroll(delta, "units")
-
-
+        self.results_canvas.yview_scroll(delta, "units")
+    
     def run(self):
-        self.window.mainloop()
+        self.parent.mainloop()

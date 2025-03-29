@@ -4,3 +4,6 @@ controllers/__pycache__/
 views/__pycache__/
 models/conexion.py
 guiBuild/search/__pycache__
+dist/BibliotecaApp.exe
+build
+BibliotecaApp.spec
