@@ -3,7 +3,7 @@ from PIL import Image, ImageTk
 from pathlib import Path
 import tkinter as tk
 
-class NewsView(tk.Frame):
+class ViewsView(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -16,11 +16,11 @@ class NewsView(tk.Frame):
         self._create_main_canvas()
         self._create_sidebar()
         self._create_results_area()
-        self._display_news()
+        self._display_results()
     
     def _setup_paths(self):
         self.OUTPUT_PATH = Path(__file__).parent
-        self.ASSETS_PATH = self.OUTPUT_PATH / Path(r"../guiBuild/news/assets/frame0")
+        self.ASSETS_PATH = self.OUTPUT_PATH / Path(r"../guiBuild/views/assets/frame0")
     
     def relative_to_assets(self, path: str) -> Path:
         return self.ASSETS_PATH / Path(path)
@@ -38,12 +38,12 @@ class NewsView(tk.Frame):
         # Imágenes normales
         self.image_home = load_and_resize_image("home.png")
         self.image_content = load_and_resize_image("content.png")
-        self.image_views = load_and_resize_image("views.png")
+        self.image_news = load_and_resize_image("news.png")
         
         # Imágenes para hover
         self.image_home_black = load_and_resize_image("home_black.png")
         self.image_content_black = load_and_resize_image("content_black.png")
-        self.image_views_black = load_and_resize_image("views_black.png")
+        self.image_news_black = load_and_resize_image("news_black.png")
     
     def _create_main_canvas(self):
         self.canvas = Canvas(
@@ -62,7 +62,7 @@ class NewsView(tk.Frame):
         self.canvas.create_text(
             315.0, 13.0,
             anchor="nw",
-            text="Novedades",
+            text="Más leídos",
             fill="#FFFFFF",
             font=("IstokWeb Regular", 30 * -1)
         )
@@ -77,8 +77,8 @@ class NewsView(tk.Frame):
                              lambda: self.controller.open_index_view())
         self._create_nav_item("Contenido", 170.0, self.image_content, self.image_content_black, 
                              lambda: self.controller.open_search_view(None))
-        self._create_nav_item("Más leído", 230.0, self.image_views, self.image_views_black, 
-                             lambda: self.controller.open_most_view())
+        self._create_nav_item("Novedades", 230.0, self.image_news, self.image_news_black, 
+                             lambda: self.controller.open_news_view())
     
     def _create_nav_item(self, text, y_pos, image, hover_image, command):
         """Crea un elemento de navegación en la barra lateral"""
@@ -141,31 +141,31 @@ class NewsView(tk.Frame):
         self.results_canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
     
-    def _display_news(self):
-        """Muestra las novedades en el área designada"""
-        news = self.controller.mostrar_novedades()
-        self._generate_results(news if news else None)
+    def _display_results(self):
+        """Muestra los resultados en el área designada"""
+        query = self.controller.mostrar_leidos()
+        self.generar_resultados(query if query else None)
     
-    def _generate_results(self, articles):
+    def generar_resultados(self, articulos):
         """Genera los widgets para mostrar los artículos"""
         # Limpiar resultados anteriores
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
         
-        if not articles:
+        if not articulos:
             no_results = Label(
                 self.scrollable_frame,
-                text="No se encontraron novedades",
+                text="No se encontraron artículos",
                 font=("Arial", 14),
                 bg="white"
             )
             no_results.pack(pady=50)
             return
         
-        for article in articles:
-            self._create_article_widget(article)
+        for articulo in articulos:
+            self._create_article_widget(articulo)
     
-    def _create_article_widget(self, article):
+    def _create_article_widget(self, articulo):
         """Crea un widget para mostrar un artículo individual"""
         # Frame principal del artículo
         item_frame = Frame(self.scrollable_frame, bg="white", bd=1, relief="solid")
@@ -174,7 +174,7 @@ class NewsView(tk.Frame):
         # Título
         Label(
             item_frame, 
-            text=article.titulo, 
+            text=articulo.titulo, 
             font=("Arial", 14, "bold"), 
             bg="white", 
             anchor="w", 
@@ -184,7 +184,7 @@ class NewsView(tk.Frame):
         # Autor
         Label(
             item_frame, 
-            text=article.autor, 
+            text=articulo.autor, 
             font=("Arial", 12), 
             bg="white", 
             anchor="w",
@@ -194,7 +194,7 @@ class NewsView(tk.Frame):
         # Descripción
         Label(
             item_frame,
-            text=article.resumen,
+            text=articulo.resumen,
             font=("Arial", 10),
             bg="white",
             anchor="w",
@@ -208,7 +208,7 @@ class NewsView(tk.Frame):
         
         Label(
             footer, 
-            text=f"Fecha publicación: {article.fecha}", 
+            text=f"Fecha publicación: {articulo.fecha}", 
             font=("Arial", 10), 
             bg="white", 
             anchor="w"
