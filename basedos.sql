@@ -60,7 +60,7 @@ CHARACTER SET latin1
 FIELDS TERMINATED BY '\t' 
 LINES TERMINATED BY '\n' ;
 
-INSERT INTO Usuario(id, nombre, contrasenia, permisos) VALUES (DEFAULT, "noemi", "1234", 1);
-INSERT INTO Usuario(id, nombre, contrasenia, permisos) VALUES (DEFAULT, "noemiuser", "1234", 2);
+INSERT INTO Usuario(id, nombre, contrasenia, permisos) VALUES (DEFAULT, "Admin", "1234", 1);
+INSERT INTO Usuario(id, nombre, contrasenia, permisos) VALUES (DEFAULT, "Usuario", "1234", 2);
 
-SELECT id, nombre, contrasenia, permisos FROM Usuario WHERE (nombre = "noemi" AND contrasenia = "1234")
+SELECT id, nombre, contrasenia, permisos FROM Usuario WHERE (nombre = "Admin" AND contrasenia = "1234")
