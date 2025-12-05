@@ -6,17 +6,20 @@ class FirebaseConfig:
     _instance = None
     _db = None
     
-    def __new__(cls):
+    # 1. MODIFICACIÓN: Aceptar la ruta de credenciales en el constructor
+    def __new__(cls, cred_path=None): 
         if cls._instance is None:
             cls._instance = super(FirebaseConfig, cls).__new__(cls)
-            cls._instance._initialize_firebase()
+            cls._instance._initialize_firebase(cred_path) # Pasar la ruta
         return cls._instance
     
-    def _initialize_firebase(self):
-        """Inicializa la conexión con Firebase"""
+    # 2. MODIFICACIÓN: Usar la ruta proporcionada, sin calcularla
+    def _initialize_firebase(self, cred_path):
+        """Inicializa la conexión con Firebase usando la ruta proporcionada."""
         try:
-            # Ruta al archivo de credenciales
-            cred_path = os.path.join(os.path.dirname(__file__), '..', 'firebase-credentials.json')
+            # Validación de la ruta para manejo de errores
+            if not cred_path or not os.path.exists(cred_path):
+                raise FileNotFoundError(f"Archivo de credenciales no encontrado en: {cred_path}")
             
             # Inicializar Firebase Admin SDK
             cred = credentials.Certificate(cred_path)
@@ -40,6 +43,10 @@ class FirebaseConfig:
 
 
 def get_firestore_db():
-    """Función helper para obtener la base de datos de Firestore"""
+    """Función helper para obtener la base de datos de Firestore. 
+       ADVERTENCIA: Esta función ahora podría requerir que se llame con la ruta
+       si no se inicializó antes con ella."""
+    # Como esta función no tiene acceso a la ruta desde main.py, 
+    # es mejor eliminar su uso o inicializar Firebase solo en main.py.
     config = FirebaseConfig()
     return config.get_db()
