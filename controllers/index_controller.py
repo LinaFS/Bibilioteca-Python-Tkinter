@@ -10,6 +10,7 @@ from controllers.views_controller import ViewsController
 from views.views_view import ViewsView
 from controllers.admin_controller import AdminController
 from views.panel_admin_view import PanelAdminView
+# Ya no se importa AdminAddView o AdminConsultView, se manejan internamente
 
 class IndexController:
     def __init__(self, root):
@@ -31,13 +32,17 @@ class IndexController:
         self.main_container .grid_rowconfigure(0, weight=1)
         self.main_container .grid_columnconfigure(0, weight=1)
         
+        # Creamos una única instancia del AdminController para todas sus vistas
+        admin_controller_instance = AdminController(self.root, self)
+
         self.view_classes = {
             "IndexView": IndexView,
             "LoginView": LoginView,
             "SearchView": SearchView,
             "NewsView": NewsView,
             "ViewsView": ViewsView,
-            "PanelAdminView": PanelAdminView
+            # Solo mantenemos la vista principal del administrador
+            "PanelAdminView": PanelAdminView,
         }
 
         self.controllers = {
@@ -46,7 +51,8 @@ class IndexController:
             "SearchView": SearchController(self.root, self, None),
             "NewsView": NewsController(self.root, self),
             "ViewsView": ViewsController(self.root, self),
-            "PanelAdminView": AdminController(self.root, self)
+            # Asignamos la única instancia del controlador de administración
+            "PanelAdminView": admin_controller_instance, 
         }
 
         self.open_index_page()

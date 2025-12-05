@@ -1,7 +1,12 @@
 from pathlib import Path
-from tkinter import Canvas, Button, PhotoImage, Tk
+from tkinter import Canvas, Button, PhotoImage, Tk, Frame, Label, ttk, messagebox
 from PIL import Image, ImageTk
 import tkinter as tk
+
+# IMPORTANTE: Asegúrate de que estas clases existan en sus archivos correspondientes
+# Ya que PanelAdminView las necesita para crear los frames internos.
+from views.admin_add_view import AdminAddView 
+from views.admin_consult_view import AdminConsultView 
 
 class PanelAdminView(tk.Frame):
     def __init__(self, parent, controller):
@@ -9,141 +14,144 @@ class PanelAdminView(tk.Frame):
         self.controller = controller
         self.parent = parent
         
-        # Configuración inicial
+        # 1. Asigna la instancia al controlador (para comunicación interna)
+        self.controller.set_admin_view(self) 
+
+        self.frames = {}
+        self.current_frame = None
+        self.resized_images = [] # Lista para evitar que las imágenes redimensionadas se eliminen
+        
+        # 2. Configuración inicial y carga de recursos (¡Corregido!)
         self._setup_paths()
-        self._configure_window()
+        self._configure_window() # Mantenido de tu código base
         self._load_images()
-        self._create_main_canvas()
-        self._create_ui_elements()
-        self._setup_event_handlers()
-    
+        
+        # 3. Configuración de Grid (Barra Lateral + Contenido)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=0) # Barra lateral
+        self.grid_columnconfigure(1, weight=1) # Contenido dinámico
+        
+        # 4. Creación de componentes
+        self._create_sidebar()
+        self._create_content_container()
+        self._setup_frames(AdminAddView, AdminConsultView)
+        
+        # 5. Inicia en la vista de Consulta
+        self.show_frame("Consult") 
+        self._setup_event_handlers() # Se mantiene para consistencia, aunque esté vacío
+
+    # --- PATH SETUP METHODS (Añadidos para corregir el AttributeError) ---
     def _setup_paths(self):
         self.OUTPUT_PATH = Path(__file__).parent
         self.ASSETS_PATH = self.OUTPUT_PATH / Path(r"../guiBuild/panelAdmin/assets/frame0")
     
     def relative_to_assets(self, path: str) -> Path:
         return self.ASSETS_PATH / Path(path)
-    
+    # --- END PATH SETUP METHODS ---
+
     def _configure_window(self):
         self.configure(bg="#C4C4C4")
-    
+
     def _load_images(self):
-        """Carga todas las imágenes necesarias"""
-        self.background_image = PhotoImage(file=self.relative_to_assets("image_1.png"))
-        self.add_icon = PhotoImage(file=self.relative_to_assets("image_3.png"))
-        self.modify_icon = PhotoImage(file=self.relative_to_assets("image_2.png"))
-        self.consult_icon = PhotoImage(file=self.relative_to_assets("image_5.png"))
-        self.delete_icon = PhotoImage(file=self.relative_to_assets("image_4.png"))
-    
-    def _create_translucent_rectangle(self, x1, y1, x2, y2, color, alpha):
-        """Crea un rectángulo semitransparente en el canvas"""
-        width, height = int(x2 - x1), int(y2 - y1)
-        img = Image.new("RGBA", (width, height), color + f"{int(255 * alpha):02x}")
-        img_tk = ImageTk.PhotoImage(img)
-        canvas_image = self.canvas.create_image(x1, y1, anchor="nw", image=img_tk)
-        self.canvas.image_refs.append(img_tk)
-        return canvas_image
-    
-    def _create_main_canvas(self):
-        """Crea el canvas principal y los elementos base"""
-        self.canvas = Canvas(
-            self.parent,
-            bg="#C4C4C4",
-            height=500,
-            width=800,
-            bd=0,
-            highlightthickness=0,
-            relief="ridge"
-        )
-        self.canvas.place(x=0, y=0)
-        self.canvas.image_refs = []  # Lista para mantener referencias de imágenes
+        """Carga las rutas de las imágenes que se usarán en la barra lateral."""
+        # Se necesita PIL para las miniaturas dinámicas, pero aquí solo guardamos las rutas.
+        self.add_icon_path = self.relative_to_assets("image_3.png")
+        self.modify_icon_path = self.relative_to_assets("image_2.png")
+        self.consult_icon_path = self.relative_to_assets("image_5.png")
+        self.delete_icon_path = self.relative_to_assets("image_4.png")
+        # Cargar imagen de fondo si fuera necesaria, aunque ya no se usa en esta vista centralizada
+        # self.background_image = PhotoImage(file=self.relative_to_assets("image_1.png"))
+
+    def _create_sidebar(self):
+        """Crea la barra lateral de navegación con iconos CRUD."""
+        self.sidebar_frame = Frame(self, bg="#342217", width=150)
+        self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
+        self.sidebar_frame.grid_propagate(False) 
+
+        # Título
+        Label(self.sidebar_frame, text="Admin", bg="#342217", fg="white", 
+              font=("IstokWeb Bold", 20)).pack(pady=(20, 10))
         
-        # Fondo
-        self.canvas.create_image(400.0, 250.0, image=self.background_image)
+        # Botones CRUD: Añadir y Consultar/Gestión
+        self._create_nav_button("Añadir", self.add_icon_path, 
+                                 self.controller.switch_to_add)
+        # El botón Consultar/Gestionar combina Consultar, Modificar y Eliminar
+        self._create_nav_button("Gestionar", self.consult_icon_path, 
+                                 self.controller.switch_to_consult)
         
-        # Título principal
-        self.canvas.create_text(
-            112.0,
-            119.0,
-            anchor="nw",
-            text="Panel del administrador",
-            fill="#000000",
-            font=("IstokWeb Bold", 55 * -1)
-        )
-    
-    def _create_ui_elements(self):
-        """Crea los elementos de la interfaz de usuario"""
-        # Rectángulo translúcido
-        self._create_translucent_rectangle(152, 211, 647, 339, "#342217", 0.6)
+        # Cerrar Sesión
+        self._create_nav_button("Cerrar Sesión", None, 
+                                 self.controller.close_session, is_bottom=True)
+
+    def _create_nav_button(self, text, icon_path, command, is_bottom=False):
+        """Crea un botón de navegación con ícono y texto."""
+        btn = Frame(self.sidebar_frame, bg="#342217")
+        if is_bottom:
+            btn.pack(side="bottom", fill="x", pady=(20, 10))
+        else:
+            btn.pack(fill="x", pady=5)
         
-        # Botón de cerrar sesión
-        self.close_session_text = self.canvas.create_text(
-            663.0,
-            27.0,
-            anchor="nw",
-            text="Cerrar Sesión",
-            fill="#000000",
-            font=("IstokWeb Bold", 15 * -1)
-        )
+        if icon_path:
+            # Uso de PIL para cargar y redimensionar el ícono
+            try:
+                img = Image.open(icon_path) 
+                icon_small = ImageTk.PhotoImage(img.resize((30, 30), Image.LANCZOS))
+            except Exception as e:
+                print(f"Error al cargar ícono en PanelAdminView: {e}")
+                icon_small = PhotoImage(file=icon_path).subsample(2) 
+
+            icon_label = Label(btn, image=icon_small, bg="#342217")
+            icon_label.pack(side="left", padx=10)
+            self.resized_images.append(icon_small) 
         
-        # Iconos y textos de opciones
-        # Añadir
-        self.canvas.create_image(221.0, 262.0, image=self.add_icon)
-        self.canvas.create_text(
-            200.0,
-            292.0,
-            anchor="nw",
-            text="Añadir",
-            fill="#FFFFFF",
-            font=("Inter", 15 * -1)
-        )
+        text_label = Label(btn, text=text, bg="#342217", fg="white", font=("Inter", 12))
+        text_label.pack(side="left", padx=5)
         
-        # Modificar
-        self.canvas.create_image(335.0, 263.0, image=self.modify_icon)
-        self.canvas.create_text(
-            305.0,
-            292.0,
-            anchor="nw",
-            text="Modificar",
-            fill="#FFFFFF",
-            font=("Inter", 15 * -1)
-        )
-        
-        # Consultar
-        self.canvas.create_image(457.0, 262.0, image=self.consult_icon)
-        self.canvas.create_text(
-            425.0,
-            292.0,
-            anchor="nw",
-            text="Consultar",
-            fill="#FFFFFF",
-            font=("Inter", 15 * -1)
-        )
-        
-        # Eliminar
-        self.canvas.create_image(577.0, 263.0, image=self.delete_icon)
-        self.canvas.create_text(
-            551.0,
-            293.0,
-            anchor="nw",
-            text="Eliminar",
-            fill="#FFFFFF",
-            font=("Inter", 15 * -1)
-        )
-    
+        # Asignar comando de clic a todos los elementos del botón
+        btn.bind("<Button-1>", lambda e: command())
+        for child in btn.winfo_children():
+            child.bind("<Button-1>", lambda e: command())
+            
+        return btn
+
+    def _create_content_container(self):
+        """Crea el frame donde se mostrarán las vistas CRUD."""
+        self.content_container = Frame(self, bg="#FFFFFF")
+        self.content_container.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+        self.content_container.grid_rowconfigure(0, weight=1)
+        self.content_container.grid_columnconfigure(0, weight=1)
+
+    def _setup_frames(self, AdminAddView, AdminConsultView):
+        """Instancia todas las vistas CRUD internas (Frames)."""
+
+        # Frame de Consulta (Gestionar, Editar, Eliminar)
+        frame_consult = AdminConsultView(self.content_container, self.controller)
+        self.frames["Consult"] = frame_consult
+        frame_consult.grid(row=0, column=0, sticky="nsew")
+
+        # Frame de Añadir/Editar
+        frame_add = AdminAddView(self.content_container, self.controller)
+        self.frames["Add"] = frame_add
+        frame_add.grid(row=0, column=0, sticky="nsew")
+
+
+    def show_frame(self, page_name):
+        """Muestra el frame solicitado y llama a la función de carga de datos."""
+        frame = self.frames.get(page_name)
+        if frame:
+            frame.tkraise() 
+            self.current_frame = page_name
+            
+            if page_name == "Consult" and hasattr(frame, 'load_data'):
+                frame.load_data() 
+            elif page_name == "Add" and hasattr(frame, 'load_form'):
+                # Carga el formulario en modo Añadir o Editar
+                frame.load_form() 
+        else:
+            messagebox.showerror("Error de Navegación", f"La vista '{page_name}' no se encontró.")
+
     def _setup_event_handlers(self):
-        """Configura los manejadores de eventos"""
-        # Eventos para el texto de cerrar sesión
-        def on_hover(event):
-            self.canvas.itemconfig(self.close_session_text, fill="white", font=("IstokWeb Bold", 15 * -1, "underline"))
-        
-        def on_leave(event):
-            self.canvas.itemconfig(self.close_session_text, fill="black", font=("IstokWeb Bold", 15 * -1))
-        
-        if self.controller:
-            self.canvas.tag_bind(self.close_session_text, "<Button-1>", lambda event: self.controller.close_session())
-            self.canvas.tag_bind(self.close_session_text, "<Enter>", on_hover)
-            self.canvas.tag_bind(self.close_session_text, "<Leave>", on_leave)
-    
+        pass
+
     def run(self):
         self.parent.mainloop()
