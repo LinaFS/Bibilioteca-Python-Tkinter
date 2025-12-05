@@ -2,6 +2,10 @@ import sys
 import os
 import tkinter as tk
 from tkinter import messagebox
+import sys
+import os
+import tkinter as tk
+from tkinter import messagebox
 from controllers.index_controller import IndexController
 from models.firebase_config import FirebaseConfig
 
@@ -14,6 +18,16 @@ def resource_path(relative_path):
     except Exception as e:
         messagebox.showerror("Error", f"Error en resource_path: {str(e)}")
         return relative_path
+
+def resource_path(relative_path):
+    """Sistema de rutas mejorado para desarrollo y producción"""
+    try:
+        base_path = sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.abspath(".")
+        path = os.path.join(base_path, relative_path)
+        return path
+    except Exception as e:
+        messagebox.showerror("Error", f"Error en resource_path: {str(e)}")
+        return relative_path  # Fallback
 
 def main():
     try:
