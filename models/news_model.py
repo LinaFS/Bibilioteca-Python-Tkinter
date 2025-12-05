@@ -1,36 +1,54 @@
-from models.conexion import init_conexion
+from models.firebase_config import get_firestore_db
 from collections import namedtuple
+
 class NewsModel:
+    def __init__(self):
+        self.db = get_firestore_db()
+        
     def buscar_novedades(self):
-        """Lógica para mostrar los artículos en novedades."""
+        """
+        Obtiene los artículos más recientes (novedades)
+        Returns:
+            list: Lista de artículos ordenados por fecha descendente
+        """
         Articulo = namedtuple(
             "Articulo", 
             ["id_artic", "titulo", "resumen", "fecha", "palabras_clave", "fuente_original", 
             "autor", "descriptor_1", "descriptor_2", "descriptor_3"]
         )
         
-        conexion = init_conexion()
-        if conexion:
-            cursor = conexion.cursor()
+        try:
+            if not self.db:
+                print("❌ No hay conexión con Firebase")
+                return None
             
-            query = """
-            SELECT id_artic, titulo, resumen, fecha, palabras_clave, fuente_original, autor, 
-                descriptor_1, descriptor_2, descriptor_3 
-            FROM Articulo 
-            ORDER BY id_artic DESC limit 10
-            """
-            cursor.execute(query)
-            resultados = cursor.fetchall()
+            articulos_ref = self.db.collection('articulos')
             
-            articulos = [Articulo(*fila) for fila in resultados]
-                    
-            conexion.commit()
-            cursor.close()
-            conexion.close()
-
-            return articulos
-        else:
-            print("No se pudo conectar a la base de datos")
+            # Ordenar por fecha de creación descendente y limitar a 10
+            # Nota: Asegúrate de tener un campo 'created_at' en tus documentos
+            query = articulos_ref.order_by('created_at', direction='DESCENDING').limit(10)
+            docs = query.stream()
+            
+            articulos = []
+            for doc in docs:
+                doc_data = doc.to_dict()
+                articulo = Articulo(
+                    id_artic=doc.id,
+                    titulo=doc_data.get('titulo', ''),
+                    resumen=doc_data.get('resumen', ''),
+                    fecha=doc_data.get('fecha', ''),
+                    palabras_clave=doc_data.get('palabras_clave', ''),
+                    fuente_original=doc_data.get('fuente_original', ''),
+                    autor=doc_data.get('autor', ''),
+                    descriptor_1=doc_data.get('descriptor_1', ''),
+                    descriptor_2=doc_data.get('descriptor_2', ''),
+                    descriptor_3=doc_data.get('descriptor_3', '')
+                )
+                articulos.append(articulo)
+            
+            print(f"✅ Se encontraron {len(articulos)} novedades")
+            return articulos if articulos else None
+            
+        except Exception as e:
+            print(f"❌ Error al buscar novedades: {e}")
             return None
-        
-    

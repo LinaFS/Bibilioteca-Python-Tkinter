@@ -1,3 +1,4 @@
+
 models/prbs.py
 models/__pycache__/
 controllers/__pycache__/
@@ -7,3 +8,7 @@ guiBuild/search/__pycache__
 dist/BibliotecaApp.exe
 build
 BibliotecaApp.spec
+
+# Firebase credentials - ¡NUNCA subir esto a Git!
+firebase-credentials.json
+*-firebase-adminsdk-*.json
