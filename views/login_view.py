@@ -1,6 +1,15 @@
 from pathlib import Path
 from tkinter import Canvas, Entry, Button, PhotoImage, BooleanVar
 import tkinter as tk
+import os
+import sys
+
+
+def _get_resource_path(relative_path: str) -> str:
+    base_path = getattr(sys, '_MEIPASS', None)
+    if base_path is None:
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    return os.path.join(base_path, relative_path)
 
 class LoginView(tk.Frame):
     def __init__(self, parent, controller):
@@ -9,19 +18,15 @@ class LoginView(tk.Frame):
         self.parent = parent
         
         # Configuración inicial
-        self._setup_paths()
         self._configure_window()
         self._load_images()
         self._create_main_canvas()
         self._create_ui_elements()
         self._setup_event_handlers()
     
-    def _setup_paths(self):
-        self.OUTPUT_PATH = Path(__file__).parent
-        self.ASSETS_PATH = self.OUTPUT_PATH / Path(r"../guiBuild/login/assets/frame0")
-    
-    def relative_to_assets(self, path: str) -> Path:
-        return self.ASSETS_PATH / Path(path)
+    def relative_to_assets(self, path: str) -> str:
+        rel = os.path.join("guiBuild", "login", "assets", "frame0", path)
+        return _get_resource_path(rel)
     
     def _configure_window(self):
         self.configure(bg="#C4C4C4")

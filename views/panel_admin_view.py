@@ -2,6 +2,15 @@ from pathlib import Path
 from tkinter import Canvas, Button, PhotoImage, Tk, Frame, Label, ttk, messagebox
 from PIL import Image, ImageTk
 import tkinter as tk
+import os
+import sys
+
+
+def _get_resource_path(relative_path: str) -> str:
+    base_path = getattr(sys, '_MEIPASS', None)
+    if base_path is None:
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    return os.path.join(base_path, relative_path)
 
 # IMPORTANTE: Asegúrate de que estas clases existan en sus archivos correspondientes
 # Ya que PanelAdminView las necesita para crear los frames internos.
@@ -22,7 +31,6 @@ class PanelAdminView(tk.Frame):
         self.resized_images = [] # Lista para evitar que las imágenes redimensionadas se eliminen
         
         # 2. Configuración inicial y carga de recursos (¡Corregido!)
-        self._setup_paths()
         self._configure_window() # Mantenido de tu código base
         self._load_images()
         
@@ -41,12 +49,9 @@ class PanelAdminView(tk.Frame):
         self._setup_event_handlers() # Se mantiene para consistencia, aunque esté vacío
 
     # --- PATH SETUP METHODS (Añadidos para corregir el AttributeError) ---
-    def _setup_paths(self):
-        self.OUTPUT_PATH = Path(__file__).parent
-        self.ASSETS_PATH = self.OUTPUT_PATH / Path(r"../guiBuild/panelAdmin/assets/frame0")
-    
-    def relative_to_assets(self, path: str) -> Path:
-        return self.ASSETS_PATH / Path(path)
+    def relative_to_assets(self, path: str) -> str:
+        rel = os.path.join("guiBuild", "panelAdmin", "assets", "frame0", path)
+        return _get_resource_path(rel)
     # --- END PATH SETUP METHODS ---
 
     def _configure_window(self):

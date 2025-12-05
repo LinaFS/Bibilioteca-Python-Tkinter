@@ -10,7 +10,8 @@ from controllers.views_controller import ViewsController
 from views.views_view import ViewsView
 from controllers.admin_controller import AdminController
 from views.panel_admin_view import PanelAdminView
-# Ya no se importa AdminAddView o AdminConsultView, se manejan internamente
+# Nota: Las vistas internas del admin (AddView, ConsultView) se cargan y controlan
+# directamente dentro de PanelAdminView, por lo que no se importan aquí.
 
 class IndexController:
     def __init__(self, root):
